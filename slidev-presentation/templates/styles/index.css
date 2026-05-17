@@ -1,0 +1,32 @@
+/* Global overrides for sophisticated dev decks. Import from slides.md via `css:` frontmatter if desired. */
+
+:root {
+  --accent: #5eead4;
+  --accent-2: #818cf8;
+  --accent-3: #f472b6;
+  --ink: #e2e8f0;
+  --muted: #94a3b8;
+  --bg: #0b1020;
+}
+
+.slidev-layout h1 {
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.slidev-layout h2 {
+  letter-spacing: -0.01em;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.slidev-layout code:not(pre code) {
+  background: rgba(94, 234, 212, 0.12);
+  color: var(--accent);
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+/* Tabular numerics across the deck */
+.slidev-layout { font-variant-numeric: tabular-nums; }
