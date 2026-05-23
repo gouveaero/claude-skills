@@ -1,6 +1,5 @@
 ---
 theme: seriph
-background: https://cover.sli.dev
 title: '{{TITLE}}'
 info: |
   {{INFO}}
@@ -8,6 +7,7 @@ class: text-center
 transition: view-transition
 mdc: true
 highlighter: shiki
+clickAnimation: up
 drawings:
   persist: false
 fonts:
@@ -20,7 +20,7 @@ fonts:
 {{SUBTITLE}}
 
 <div class="pt-12 opacity-70 text-sm">
-  <carbon:arrow-right class="inline" /> Space para avançar
+  <mdi-arrow-right class="inline" /> Espaço para avançar
 </div>
 
 <!--
@@ -28,11 +28,11 @@ Notas do apresentador — contexto, gancho inicial, quanto tempo ficar neste sli
 -->
 
 ---
-transition: fade-out
-layout: center
+layout: quote
+transition: fade
 ---
 
-# Exemplo — QuoteReveal
+# "A melhor arquitetura é aquela que pode ser refeita."
 
 <QuoteReveal
   text="A melhor arquitetura é aquela que pode ser refeita."
@@ -41,33 +41,171 @@ layout: center
 />
 
 ---
-
-# Exemplo — lista progressiva
-
-<v-clicks>
-
-- Primeiro ponto aparece com o primeiro click
-- Segundo ponto em seguida
-- Terceiro ponto fecha a ideia
-
-</v-clicks>
-
+layout: fact
+transition: slide-up
+title: Por que isso importa
 ---
 
-# Exemplo — StatNumber
+# 3.2x
 
-<div class="flex gap-16 justify-center items-end mt-12">
-  <StatNumber :value="99.9" suffix="%" label="uptime" :decimals="1" />
-  <StatNumber :value="3.2" suffix="x" label="mais rápido" :decimals="1" />
-  <StatNumber :value="420" prefix="+" label="deploys/dia" />
-</div>
+<StatNumber :value="3.2" suffix="x" label="mais rápido com a nova arquitetura" :decimals="1" />
+
+<CalloutBadge variant="live" text="medido em prod" class="mt-8" />
 
 ---
-layout: center
+title: Antes e depois — refactoring story
+---
+
+# Refactoring story
+
+```ts magic-move
+// V1 — imperative loop
+function process(data) {
+  const result = []
+  for (let i = 0; i < data.length; i++) {
+    result.push(transform(data[i]))
+  }
+  return result
+}
+```
+
+```ts
+// V2 — map functional
+function process(data) {
+  return data.map(item => transform(item))
+}
+```
+
+```ts
+// V3 — curried + nome melhor
+const transformAll = data => data.map(transform)
+```
+
+---
+title: Arquitetura do pipeline
+---
+
+# Arquitetura
+
+```mermaid
+sequenceDiagram
+  Cliente->>API: POST /event
+  API->>Queue: publish
+  Queue->>Worker: consume
+  Worker->>DB: write
+  API-->>Cliente: 202 Accepted
+```
+
+---
+title: KPIs
+---
+
+# Métricas que importam
+
+<MetricGrid :cols="3" :items="[
+  { value: '99.9', suffix: '%', label: 'uptime' },
+  { value: '3.2', suffix: 'x', label: 'throughput' },
+  { value: '12', suffix: 'min', label: 'p99 latency' },
+  { value: '420', prefix: '+', label: 'deploys/dia' },
+  { value: '67', suffix: '%', label: 'cost reduction' },
+  { value: '0', label: 'incidentes Sev1' }
+]" />
+
+---
+title: Comparação antes/depois
+---
+
+# Antes vs. depois
+
+<ComparisonSplit beforeTitle="Stack antigo" afterTitle="Stack atual">
+<template #before>
+
+- Deploy manual via SSH
+- Build no servidor (20min)
+- Sem rollback
+- 1 ambiente: prod
+
+</template>
+<template #after>
+
+- GitHub Actions
+- Build paralelizado (2min)
+- Rollback via git revert
+- 3 ambientes: dev/staging/prod
+
+</template>
+</ComparisonSplit>
+
+---
+title: Pergunta pra audiência
+---
+
+# Qual stack você usa hoje?
+
+<InteractivePoll
+  question="Sua stack atual de backend"
+  :options="[
+    { id: 'node', label: 'Node.js' },
+    { id: 'python', label: 'Python (Flask/Django/FastAPI)' },
+    { id: 'go', label: 'Go' },
+    { id: 'other', label: 'Outro' }
+  ]"
+/>
+
+---
+title: ROI da migração
+---
+
+# ROI calculator
+
+<ROICalculator
+  :inputs="[
+    { id: 'devs', label: 'Devs no time', min: 1, max: 50, default: 8 },
+    { id: 'hours', label: 'Horas/sem perdidas em deploys', min: 0, max: 40, default: 12 },
+    { id: 'rate', label: 'Custo hora dev', min: 50, max: 500, default: 200, prefix: 'R$ ' }
+  ]"
+  :formula="(v) => v.devs * v.hours * v.rate * 4"
+  resultLabel="Custo mensal evitado"
+  resultPrefix="R$ "
+  :result-decimals="0"
+/>
+
+---
+title: Roadmap
+---
+
+# Próximos passos
+
+<Timeline orientation="horizontal" :items="[
+  { date: 'Mai', title: 'MVP em prod', body: 'pipeline básico ativo', icon: '<mdi-flag />' },
+  { date: 'Jun', title: 'Observability', body: 'Grafana + Sentry', icon: '<mdi-chart-line />' },
+  { date: 'Jul', title: 'Multi-region', body: 'failover ativo-ativo', icon: '<mdi-earth />' },
+  { date: 'Ago', title: 'Auto-scaling', body: 'baseado em load', icon: '<mdi-arrow-expand-all />' }
+]" />
+
+---
+layout: statement
+transition: scale-fade
+---
+
+# Construir o futuro <br> exige refazer o presente.
+
+---
+layout: end
 ---
 
 # Obrigado
 
 <div class="opacity-70 mt-8">
-  @user · email@exemplo.com
+  <mdi-at /> @gouveaero · gabrielgouvea.com.br
 </div>
+
+<RenderWhen context="presenter">
+<div class="mt-4 text-sm opacity-50">
+[Nota presenter: deixar 5min de Q&A]
+</div>
+</RenderWhen>
+
+<!--
+Encerramento — agradecer, abrir Q&A.
+-->

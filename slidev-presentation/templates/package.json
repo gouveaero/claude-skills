@@ -7,12 +7,20 @@
     "build": "slidev build",
     "export": "slidev export",
     "export-pdf": "slidev export --format pdf",
-    "export-pptx": "slidev export --format pptx"
+    "export-pptx": "slidev export --format pptx",
+    "export-png": "slidev export --format png --output ./exports/"
   },
   "dependencies": {
     "@slidev/cli": "^0.50.0",
     "@slidev/theme-seriph": "*",
     "@slidev/theme-default": "*",
+    "@iconify-json/mdi": "^1.2.0",
+    "@iconify-json/heroicons": "^1.2.0",
+    "@iconify-json/carbon": "^1.2.0",
+    "@vueuse/motion": "^2.2.0",
     "gsap": "^3.12.5"
+  },
+  "devDependencies": {
+    "playwright-chromium": "^1.49.0"
   }
 }
