@@ -1,0 +1,20 @@
+import { Composition } from "remotion";
+import { {{COMPONENT_NAME}} } from "./components/{{COMPONENT_PATH}}";
+
+// Composição isolada para render com alpha canal
+// Gerada automaticamente por build_remotion.py para export_overlays.py
+export const {{COMPOSITION_ID_CAMEL}}Root = () => {
+  const props = {{PROPS_JSON}} as const;
+
+  return (
+    <Composition
+      id="{{COMPOSITION_ID}}"
+      component={{{COMPONENT_NAME}}}
+      width={{WIDTH}}
+      height={{HEIGHT}}
+      fps={{FPS}}
+      durationInFrames={Math.round({{DURATION_S}} * {{FPS}})}
+      defaultProps={props}
+    />
+  );
+};

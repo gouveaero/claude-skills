@@ -1,0 +1,88 @@
+{
+  "$schema": "video-editor/brand-config.v1",
+
+  "brand": {
+    "name": "Example Brand",
+    "primary_color": "#1F4D2C",
+    "accent_color": "#B87333",
+    "neutral_color": "#F5F1E8",
+    "background_color": "#0A0A0A",
+    "text_color": "#FFFFFF",
+    "font_family": "Inter",
+    "font_weight_caption": 800,
+    "font_weight_title": 900,
+    "logo": "assets/logo_branco.png",
+    "logo_position": "top_right",
+    "watermark_opacity": 0.7
+  },
+
+  "defaults": {
+    "fps": 30,
+    "resolution": "1080x1920",
+    "caption_style": "highlight_accent",
+    "color_preset": "warm_high_contrast",
+    "cut_aggressiveness": "medium",
+    "max_clip_duration_seconds": 4.0,
+    "min_clip_duration_seconds": 0.6
+  },
+
+  "caption": {
+    "position": "bottom_third",
+    "max_chars_per_line": 22,
+    "max_words_per_screen": 4,
+    "uppercase": true,
+    "highlight_word_color": "#B87333",
+    "highlight_animation": "kinetic_pop"
+  },
+
+  "voice": {
+    "language": "pt-BR",
+    "whisper_model": "mlx-community/whisper-large-v3-mlx"
+  },
+
+  "compliance": {
+    "rules_source": "CLAUDE.md",
+    "forbidden_phrases": [],
+    "required_disclosure": ""
+  },
+
+  "claude_md": "CLAUDE.md",
+  "resolve_project_folder": "Example_Reels",
+
+  "remotion": {
+    "output_subfolder": "output",
+    "render_preset": {
+      "codec": "h264",
+      "crf": 18,
+      "concurrency": 4
+    },
+    "caption_animation": "kinetic_pop",
+    "transition_default": "fade",
+    "transition_duration_frames": 6,
+    "logo_bug": {
+      "enabled": true,
+      "position": "top-right",
+      "opacity": 0.7
+    },
+    "css_filter": "saturate(0.92) contrast(1.05) brightness(1.04)",
+    "emphasis_words": []
+  },
+
+  "capcut": {
+    "transition_default": "fade",
+    "transition_duration_frames": 6,
+    "caption_size": 8.0,
+    "caption_bold": true,
+    "caption_color": "#FFFFFF",
+    "caption_position_y": -0.8,
+    "overlay_size": 14.0
+  },
+
+  "aspect": "9:16",
+
+  "sfx": {
+    "enabled": true,
+    "sfx_index_path": "/Users/gabriel/.claude/skills/video-editor/assets/sfx_index.json",
+    "default_volume_db": -10
+  }
+}

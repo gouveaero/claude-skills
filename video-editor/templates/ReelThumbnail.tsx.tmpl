@@ -1,0 +1,48 @@
+import React from "react";
+import { AbsoluteFill } from "remotion";
+import { Reel } from "./Reel";
+
+// ReelThumbnail — single-frame composition that renders the same Reel at a fixed frame.
+// Used for Instagram/YouTube cover images via `npx remotion still reel-thumbnail thumb.png`.
+//
+// Pick the frame via the `frameIndex` prop:
+//   - From CLI:  --props='{"frameIndex": 2400}'   (2400f @ 30fps = 80s into the reel)
+//   - From script: scripts/render_thumbnail.py --frame-ms 80000
+
+type ReelThumbnailProps = {
+  plan: any;
+  brand: any;
+  frameIndex?: number;
+  title?: string;
+};
+
+export const ReelThumbnail: React.FC<ReelThumbnailProps> = ({
+  plan, brand, frameIndex = 0, title,
+}) => {
+  // For now we delegate to the same Reel renderer; for distinct thumbnail layouts
+  // (e.g. cover with title text overlay), extend with additional JSX below.
+  // Note: <Still> renders ONE frame — frameIndex is honored via the runtime
+  // `--frame=N` flag passed by render_thumbnail.py.
+  return (
+    <AbsoluteFill>
+      <Reel plan={plan} brand={brand} />
+      {title && (
+        <AbsoluteFill style={{
+          pointerEvents: "none",
+          display: "flex", alignItems: "flex-end", justifyContent: "center",
+          paddingBottom: 220,
+        }}>
+          <div style={{
+            background: brand?.brand?.accent_color ?? "#B87333",
+            color: "#0A0A0A",
+            padding: "20px 36px", borderRadius: 12,
+            fontFamily: "Inter, system-ui, sans-serif",
+            fontSize: 88, fontWeight: 900, letterSpacing: 2,
+            textAlign: "center", maxWidth: "82%",
+            boxShadow: "0 16px 50px rgba(0,0,0,0.4)",
+          }}>{title}</div>
+        </AbsoluteFill>
+      )}
+    </AbsoluteFill>
+  );
+};

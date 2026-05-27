@@ -1,0 +1,612 @@
+{
+  "root": "/Users/gabriel/Documents/EFEITOS SONOROS",
+  "total_files": 280,
+  "categories": {
+    "WOOSH": {
+      "description": "Whooshes, swooshes, transições rápidas. Use em cortes secos, swipes, pans.",
+      "use_cases": [
+        "cut",
+        "swipe_in",
+        "swipe_out",
+        "overlay_enter",
+        "scene_change"
+      ],
+      "files": [
+        "01_woosh/woosh-01.mp3",
+        "01_woosh/woosh-02.mp3",
+        "01_woosh/woosh-03.mp3",
+        "01_woosh/woosh-04.mp3",
+        "01_woosh/woosh-air-ambient-woosh.wav",
+        "01_woosh/woosh-angelic-reward-2.wav",
+        "01_woosh/woosh-aura-woosh-01.wav",
+        "01_woosh/woosh-aura-woosh-02-flat1.wav",
+        "01_woosh/woosh-aura-woosh-03.wav",
+        "01_woosh/woosh-bright-reverse-1-flat1.mp3",
+        "01_woosh/woosh-bright-reverse-2-flat1.mp3",
+        "01_woosh/woosh-bright-reverse-3-flat1.mp3",
+        "01_woosh/woosh-bright-reverse-4-flat1.mp3",
+        "01_woosh/woosh-christmas-ui-menu-bell-ding-wet-1-flat1.wav",
+        "01_woosh/woosh-cinematic-big-whoosh-impact-effect.mp3",
+        "01_woosh/woosh-cinematic-hit-roll-ohmlab.mp3",
+        "01_woosh/woosh-drum-swish-1.mp3",
+        "01_woosh/woosh-el-synthefx-whoosh-06-hpx-flat1.wav",
+        "01_woosh/woosh-es-riser-suction-5-sfx-producer.mp3",
+        "01_woosh/woosh-fast-whoosh-118248.mp3",
+        "01_woosh/woosh-flat1.mp3",
+        "01_woosh/woosh-futuristic-door-flat1.mp3",
+        "01_woosh/woosh-futuristic-reveal-flat1.wav",
+        "01_woosh/woosh-futuristic-swell-flat1.wav",
+        "01_woosh/woosh-game-booster-2-flat1.wav",
+        "01_woosh/woosh-grunge-reverse-cinematic-sweep.mp3",
+        "01_woosh/woosh-heart-of-magic-04.wav",
+        "01_woosh/woosh-heavy-whoosh.wav",
+        "01_woosh/woosh-impactflanger-gfx027001.wav",
+        "01_woosh/woosh-inverted-woosh-1.mp3",
+        "01_woosh/woosh-inverted-woosh-2.mp3",
+        "01_woosh/woosh-inverted-woosh-3.mp3",
+        "01_woosh/woosh-low-woosh.mp3",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-01.mp3",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-01.wav",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-02.mp3",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-02.wav",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-03.mp3",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-03.wav",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-04.mp3",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-04.wav",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-05.mp3",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-05.wav",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-06.mp3",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-06.wav",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-07.mp3",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-07.wav",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-08.mp3",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-08.wav",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-09.mp3",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-09.wav",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-10.mp3",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-10.wav",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-11-left-and-right.mp3",
+        "01_woosh/woosh-ma-beison-motion-whoosh-swipe-11-left-and-right.wav",
+        "01_woosh/woosh-ma-kokerac-short-whooshes-and-light-impact-vibes-v1-flat1.wav",
+        "01_woosh/woosh-ma-kokerac-short-whooshes-and-light-impact-vibes-v2-flat1.wav",
+        "01_woosh/woosh-ma-kokerac-short-whooshes-and-light-impact-vibes-v3-flat1.wav",
+        "01_woosh/woosh-magic-shimmer-beam-02.wav",
+        "01_woosh/woosh-magic-transition-ody-0273-036.wav",
+        "01_woosh/woosh-magic-woosh-1.mp3",
+        "01_woosh/woosh-magic-woosh-2.mp3",
+        "01_woosh/woosh-magic-woosh-3.mp3",
+        "01_woosh/woosh-mobile-game-ui-soft-transitional-woosh-1-flat1.wav",
+        "01_woosh/woosh-ocean-game-ui-holographic-06-flat1.wav",
+        "01_woosh/woosh-reversed-heartbeat-1.mp3",
+        "01_woosh/woosh-rewarding-intro.mp3",
+        "01_woosh/woosh-scifiambience-digiz04-54-01-flat1.wav",
+        "01_woosh/woosh-sfx-riser-metallic-transition.mp3",
+        "01_woosh/woosh-smart-ui-notification-various-25-short-alert-menu-system.wav",
+        "01_woosh/woosh-strong-blow-woosh.wav",
+        "01_woosh/woosh-sub-swoosh-with-delay-4-flat1.mp3",
+        "01_woosh/woosh-subsonic-panoramic-woosh.wav",
+        "01_woosh/woosh-transition-sweep-high.wav",
+        "01_woosh/woosh-whipwhoosh-2v.wav",
+        "01_woosh/woosh-whipwhoosh.wav",
+        "01_woosh/woosh-whipwhooshrope.wav",
+        "01_woosh/woosh-whoosh-1.mp3",
+        "01_woosh/woosh-whoosh-2.mp3",
+        "01_woosh/woosh-whoosh-bang-impact.wav",
+        "01_woosh/woosh-whoosh-bang-stealth.wav",
+        "01_woosh/woosh-whoosh-main.mp3",
+        "01_woosh/woosh-whoosh.wav",
+        "01_woosh/woosh.mp3"
+      ],
+      "count": 84,
+      "duration_ms_avg": 4426
+    },
+    "CLICK": {
+      "description": "Cliques de UI/botões. Use em CTAs, checklist, taps.",
+      "use_cases": [
+        "ui",
+        "cta",
+        "checklist",
+        "button"
+      ],
+      "files": [
+        "02_click/click-1.mp3",
+        "02_click/click-10.mp3",
+        "02_click/click-11.mp3",
+        "02_click/click-12.mp3",
+        "02_click/click-13.mp3",
+        "02_click/click-14.mp3",
+        "02_click/click-15.mp3",
+        "02_click/click-2.mp3",
+        "02_click/click-3.mp3",
+        "02_click/click-4.mp3",
+        "02_click/click-5.mp3",
+        "02_click/click-6.mp3",
+        "02_click/click-7.mp3",
+        "02_click/click-8.mp3",
+        "02_click/click-9.mp3",
+        "02_click/click-button-1.mp3",
+        "02_click/click-button-10.mp3",
+        "02_click/click-button-11.mp3",
+        "02_click/click-button-12.mp3",
+        "02_click/click-button-13.mp3",
+        "02_click/click-button-14.mp3",
+        "02_click/click-button-15.mp3",
+        "02_click/click-button-2.mp3",
+        "02_click/click-button-3.mp3",
+        "02_click/click-button-4.mp3",
+        "02_click/click-button-5.mp3",
+        "02_click/click-button-6.mp3",
+        "02_click/click-button-7.mp3",
+        "02_click/click-button-8.mp3",
+        "02_click/click-button-9.mp3",
+        "02_click/click-button-click.mp3",
+        "02_click/click-mouse-click.mp3",
+        "02_click/click-mouseclick.wav",
+        "02_click/click-switch-click.mp3",
+        "02_click/click.aac"
+      ],
+      "count": 35,
+      "duration_ms_avg": 7289
+    },
+    "DIGITAL": {
+      "description": "Impactos digitais/UI. Use em overlays digitais, tech reveal.",
+      "use_cases": [
+        "ui_transition",
+        "digital_overlay",
+        "tech",
+        "swipe"
+      ],
+      "files": [
+        "03_digital/digital-long-speed-gear.wav",
+        "03_digital/digital-ma-asak-sfx-scifiuiswitch-device-ui-switch.wav",
+        "03_digital/digital-ma-asak-sfx-scifiuiswitch-high-pitch-ui.wav",
+        "03_digital/digital-ma-asak-sfx-scifiuiswitch-scifi-switch-ui.wav",
+        "03_digital/digital-ma-asak-sfx-scifiuiswitch-scifi-ui-switch.wav",
+        "03_digital/digital-ma-asak-sfx-scifiuiswitch-switch-ui-scifi.wav",
+        "03_digital/digital-ma-asak-sfx-scifiuiswitch-ui-device-scifi.wav",
+        "03_digital/digital-ma-asak-sfx-scifiuiswitch-ui-device-switch.wav",
+        "03_digital/digital-ma-asak-sfx-scifiuiswitch-ui-switch-scifi.wav",
+        "03_digital/digital-ma-equilibrio-interfaceimpacts-01.wav",
+        "03_digital/digital-ma-equilibrio-interfaceimpacts-02.wav",
+        "03_digital/digital-ma-equilibrio-interfaceimpacts-03.wav",
+        "03_digital/digital-ma-equilibrio-interfaceimpacts-04.wav",
+        "03_digital/digital-ma-equilibrio-interfaceimpacts-05.wav",
+        "03_digital/digital-ma-originalsound-chestandrewardunlocking-1.wav",
+        "03_digital/digital-ma-originalsound-chestandrewardunlocking-2.wav",
+        "03_digital/digital-ma-originalsound-chestandrewardunlocking-3.wav",
+        "03_digital/digital-ma-originalsound-chestandrewardunlocking-4.wav",
+        "03_digital/digital-ma-originalsound-chestandrewardunlocking-5.wav",
+        "03_digital/digital-middle-gear.wav",
+        "03_digital/digital-ui-ping.wav",
+        "03_digital/digital-ui-sound-270349.mp3",
+        "03_digital/digital-ui-whoosh.wav",
+        "03_digital/digital-whoosh-deep-light-2.wav",
+        "03_digital/digital-whoosh-deep-short.wav"
+      ],
+      "count": 25,
+      "duration_ms_avg": 2572
+    },
+    "TRANSIÇÃO": {
+      "description": "Transições genéricas. Use entre cenas.",
+      "use_cases": [
+        "transition",
+        "scene_change"
+      ],
+      "files": [
+        "04_transicao/transicao-ma-cinetransitions-deeplongairtransition-001.wav",
+        "04_transicao/transicao-ma-cinetransitions-deeplongairtransition-002.wav",
+        "04_transicao/transicao-ma-cinetransitions-deeplongairtransition-003.wav",
+        "04_transicao/transicao-ma-cinetransitions-deeplongairtransition4-001.wav",
+        "04_transicao/transicao-ma-cinetransitions-deeplongairtransition4-002.wav",
+        "04_transicao/transicao-ma-cinetransitions-deeplongairtransition4-003.wav",
+        "04_transicao/transicao-ma-cinetransitions-deeplongairtransition4-004.wav",
+        "04_transicao/transicao-transition-1.mp3",
+        "04_transicao/transicao-transition-10.mp3",
+        "04_transicao/transicao-transition-11.mp3",
+        "04_transicao/transicao-transition-12.mp3",
+        "04_transicao/transicao-transition-13.mp3",
+        "04_transicao/transicao-transition-14.mp3",
+        "04_transicao/transicao-transition-15.mp3",
+        "04_transicao/transicao-transition-2.mp3",
+        "04_transicao/transicao-transition-3.mp3",
+        "04_transicao/transicao-transition-4.mp3",
+        "04_transicao/transicao-transition-5.mp3",
+        "04_transicao/transicao-transition-6.mp3",
+        "04_transicao/transicao-transition-7.mp3",
+        "04_transicao/transicao-transition-8.mp3",
+        "04_transicao/transicao-transition-9.mp3"
+      ],
+      "count": 22,
+      "duration_ms_avg": 8596
+    },
+    "CAMERA": {
+      "description": "Cliques de obturador. Use em reveal visual, zoom-in.",
+      "use_cases": [
+        "reveal",
+        "photo",
+        "product_shot",
+        "zoom_reveal"
+      ],
+      "files": [
+        "05_camera/camera-attack-press-or-paparazzi-photo-shoot-ocp-1709-23.wav",
+        "05_camera/camera-beeps.aac",
+        "05_camera/camera-cam-shutter.wav",
+        "05_camera/camera-flash.mp3",
+        "05_camera/camera-ma-sbproductions-camerashuttercollection-shutter1.wav",
+        "05_camera/camera-ma-sbproductions-camerashuttercollection-shutter10.wav",
+        "05_camera/camera-ma-sbproductions-camerashuttercollection-shutter11.wav",
+        "05_camera/camera-ma-sbproductions-camerashuttercollection-shutter12.wav",
+        "05_camera/camera-ma-sbproductions-camerashuttercollection-shutter2.wav",
+        "05_camera/camera-ma-sbproductions-camerashuttercollection-shutter3.wav",
+        "05_camera/camera-ma-sbproductions-camerashuttercollection-shutter4.wav",
+        "05_camera/camera-ma-sbproductions-camerashuttercollection-shutter5.wav",
+        "05_camera/camera-ma-sbproductions-camerashuttercollection-shutter6.wav",
+        "05_camera/camera-ma-sbproductions-camerashuttercollection-shutter7.wav",
+        "05_camera/camera-ma-sbproductions-camerashuttercollection-shutter8.wav",
+        "05_camera/camera-ma-sbproductions-camerashuttercollection-shutter9.wav",
+        "05_camera/camera-shoot.wav",
+        "05_camera/camera-shutter-click-sound-effect-no-copyright.mp3",
+        "05_camera/camera-shutters.mp3"
+      ],
+      "count": 19,
+      "duration_ms_avg": 6094
+    },
+    "PLIM": {
+      "description": "Plims, sparkles, chimes. Use em destaque de números, checks, revelações positivas.",
+      "use_cases": [
+        "highlight",
+        "checklist",
+        "number_stat",
+        "notification"
+      ],
+      "files": [
+        "06_plim/plim-1.mp3",
+        "06_plim/plim-10.mp3",
+        "06_plim/plim-11.mp3",
+        "06_plim/plim-12.mp3",
+        "06_plim/plim-13.mp3",
+        "06_plim/plim-14.mp3",
+        "06_plim/plim-15.mp3",
+        "06_plim/plim-2.mp3",
+        "06_plim/plim-3.mp3",
+        "06_plim/plim-4.mp3",
+        "06_plim/plim-5.mp3",
+        "06_plim/plim-6.mp3",
+        "06_plim/plim-7.mp3",
+        "06_plim/plim-8.mp3",
+        "06_plim/plim-9.mp3"
+      ],
+      "count": 15,
+      "duration_ms_avg": 8795
+    },
+    "RISER": {
+      "description": "Uplifters, build-ups antes de clímax/drop.",
+      "use_cases": [
+        "hook_buildup",
+        "intro",
+        "before_reveal",
+        "tension"
+      ],
+      "files": [
+        "07_riser/riser-1.wav",
+        "07_riser/riser-10.wav",
+        "07_riser/riser-2.wav",
+        "07_riser/riser-3.wav",
+        "07_riser/riser.mp3",
+        "07_riser/riser.wav",
+        "07_riser/riser1.wav",
+        "07_riser/riser2.wav"
+      ],
+      "count": 8,
+      "duration_ms_avg": 4177
+    },
+    "VARIAVEIS": {
+      "description": "SFX diversos — épico, error, idea moment.",
+      "use_cases": [
+        "special",
+        "epic_impact",
+        "error_moment",
+        "idea_moment"
+      ],
+      "files": [
+        "08_variaveis/variaveis-braaam-028.wav",
+        "08_variaveis/variaveis-digital-counting.mp3",
+        "08_variaveis/variaveis-epic-impact.mp3",
+        "08_variaveis/variaveis-good-idea.mp3",
+        "08_variaveis/variaveis-microsoft-windows-xp-error-sound-effect-hd-0lhhruuw2n8-128k-1655433026313.mp3",
+        "08_variaveis/variaveis-sub-impact.wav"
+      ],
+      "count": 6,
+      "duration_ms_avg": 5955
+    },
+    "AMBIENTE": {
+      "description": "Ambientes/atmosferas/drones. Use em b-roll, intros.",
+      "use_cases": [
+        "ambient",
+        "broll",
+        "intro",
+        "outdoor"
+      ],
+      "files": [
+        "09_ambiente/ambiente-bar-crowd.wav",
+        "09_ambiente/ambiente-forest-evening.wav",
+        "09_ambiente/ambiente-forest.wav",
+        "09_ambiente/ambiente-ocean.wav",
+        "09_ambiente/ambiente-walking-through-grass.wav",
+        "09_ambiente/ambiente-walking.wav"
+      ],
+      "count": 6,
+      "duration_ms_avg": 149657
+    },
+    "CINEMATICA": {
+      "description": "Hits cinematográficos — impactos grandes, climax, CTA final.",
+      "use_cases": [
+        "impact",
+        "dramatic_reveal",
+        "cta",
+        "climax"
+      ],
+      "files": [
+        "10_cinematica/cinematica-cinematic-hits-1.mp3",
+        "10_cinematica/cinematica-cinematic-hits-2.mp3",
+        "10_cinematica/cinematica-cinematic-hits-3.mp3",
+        "10_cinematica/cinematica-cinematic-hits-4.mp3",
+        "10_cinematica/cinematica-cinematic-hits-5.mp3"
+      ],
+      "count": 5,
+      "duration_ms_avg": 6091
+    },
+    "ROLAGEM": {
+      "description": "Sons mecânicos de rolagem/engrenagem.",
+      "use_cases": [
+        "list_scroll",
+        "count_up",
+        "progress",
+        "mechanism"
+      ],
+      "files": [
+        "11_rolagem/rolagem-bike-chain.wav",
+        "11_rolagem/rolagem-correct-sfx.mp3",
+        "11_rolagem/rolagem-gears.wav",
+        "11_rolagem/rolagem-rotary-button.wav"
+      ],
+      "count": 4,
+      "duration_ms_avg": 2432
+    },
+    "GLITCH": {
+      "description": "Glitches digitais. Use em pattern interrupts, virada de narrativa.",
+      "use_cases": [
+        "glitch_transition",
+        "problem_moment",
+        "pattern_interrupt"
+      ],
+      "files": [
+        "12_glitch/glitch-1.wav",
+        "12_glitch/glitch-2.wav"
+      ],
+      "count": 2,
+      "duration_ms_avg": 1645
+    },
+    "TECLADO": {
+      "description": "Digitação. Use em typing text, kinetic text.",
+      "use_cases": [
+        "typing",
+        "data_entry",
+        "work_scene",
+        "kinetic_text"
+      ],
+      "files": [
+        "13_teclado/teclado-keyboard.wav",
+        "13_teclado/teclado-typing.wav"
+      ],
+      "count": 2,
+      "duration_ms_avg": 16842
+    },
+    "DINHEIRO": {
+      "description": "Cash register, ka-ching. Use em menção de valores, savings.",
+      "use_cases": [
+        "money_reveal",
+        "financial",
+        "savings",
+        "revenue"
+      ],
+      "files": [
+        "14_dinheiro/dinheiro-cash-register-sounds-effects-no-copyright-free-use.mp3",
+        "14_dinheiro/dinheiro-money.mp3"
+      ],
+      "count": 2,
+      "duration_ms_avg": 2416
+    },
+    "ESTALO": {
+      "description": "Estalos/snaps curtos. Use em marcação rítmica, ênfase em palavras.",
+      "use_cases": [
+        "cut_accent",
+        "word_emphasis",
+        "rhythm"
+      ],
+      "files": [
+        "15_estalo/estalo.mp3"
+      ],
+      "count": 1,
+      "duration_ms_avg": 444
+    },
+    "CONTAGEM": {
+      "description": "Tick-tock, countdown. Use antes de revelar estatísticas.",
+      "use_cases": [
+        "countdown",
+        "number_reveal",
+        "stat",
+        "timer"
+      ],
+      "files": [
+        "16_contagem/contagem-digital-counting-01.wav",
+        "16_contagem/tick-tock-fs349453.mp3",
+        "16_contagem/tick-tock-fs547305.mp3",
+        "16_contagem/tick-tock-fs830206.mp3"
+      ],
+      "count": 4,
+      "duration_ms_avg": 7170
+    },
+    "POPS": {
+      "description": "Pop-ups curtos. Use em aparição de elementos, balões.",
+      "use_cases": [
+        "overlay_appear",
+        "bubble",
+        "popup"
+      ],
+      "files": [
+        "17_pops/pops-pop-up-sound-effect-256kbps-cbr.mp3"
+      ],
+      "count": 1,
+      "duration_ms_avg": 4008
+    },
+    "BOOM": {
+      "description": "Boom impacts, bass drops. Use em drops dramáticos, explosões.",
+      "use_cases": [
+        "drop",
+        "explosion",
+        "dramatic_impact"
+      ],
+      "files": [
+        "18_boom/boom-explosion-fs165911.mp3",
+        "18_boom/boom-explosion-fs336011.mp3",
+        "18_boom/boom-explosion-fs517664.mp3",
+        "18_boom/boom-fs350978.mp3",
+        "18_boom/boom-fs430977.mp3",
+        "18_boom/boom-fs535615.mp3",
+        "18_boom/boom-fs750720.mp3"
+      ],
+      "count": 7,
+      "duration_ms_avg": 3341
+    },
+    "NOTIFICATION": {
+      "description": "Notifications, success/error chimes. Use em UI feedback.",
+      "use_cases": [
+        "notification",
+        "ui_feedback",
+        "success",
+        "error"
+      ],
+      "files": [
+        "19_notification/error-fs180039.mp3",
+        "19_notification/error-fs407466.mp3",
+        "19_notification/error-fs419023.mp3",
+        "19_notification/notification-fs560880.mp3",
+        "19_notification/notification-fs625753.mp3",
+        "19_notification/notification-fs850178.mp3",
+        "19_notification/success-fs328120.mp3",
+        "19_notification/success-fs571513.mp3",
+        "19_notification/success-fs721648.mp3"
+      ],
+      "count": 9,
+      "duration_ms_avg": 12232
+    },
+    "DRUM": {
+      "description": "Drum hits, kicks, snares.",
+      "use_cases": [
+        "drum_hit",
+        "rhythm_accent",
+        "percussion"
+      ],
+      "files": [
+        "20_drum/drum-kick-fs218105.mp3",
+        "20_drum/drum-kick-fs272475.mp3",
+        "20_drum/drum-kick-fs494435.mp3",
+        "20_drum/drum-snare-fs340471.mp3",
+        "20_drum/drum-snare-fs371860.mp3"
+      ],
+      "count": 5,
+      "duration_ms_avg": 6988
+    },
+    "GLASS_BREAK": {
+      "description": "Vidro quebrando.",
+      "use_cases": [
+        "shatter",
+        "break",
+        "destruction"
+      ],
+      "files": [
+        "21_glass-break/glass-break-fs336425.mp3",
+        "21_glass-break/glass-break-fs595477.mp3",
+        "21_glass-break/glass-break-fs828477.mp3"
+      ],
+      "count": 3,
+      "duration_ms_avg": 69928
+    },
+    "APPLAUSE": {
+      "description": "Aplausos, claps.",
+      "use_cases": [
+        "celebration",
+        "applause",
+        "victory"
+      ],
+      "files": [
+        "22_applause/applause-fs125793.mp3",
+        "22_applause/applause-fs447961.mp3",
+        "22_applause/applause-fs668797.mp3"
+      ],
+      "count": 3,
+      "duration_ms_avg": 27399
+    },
+    "HORROR": {
+      "description": "Horror stingers, jump scares.",
+      "use_cases": [
+        "horror",
+        "suspense",
+        "jump_scare"
+      ],
+      "files": [
+        "23_horror/horror-fs441384.mp3",
+        "23_horror/horror-fs484395.mp3",
+        "23_horror/horror-fs725223.mp3"
+      ],
+      "count": 3,
+      "duration_ms_avg": 14200
+    },
+    "FAIL": {
+      "description": "Sad trombone, meme fail.",
+      "use_cases": [
+        "fail",
+        "negative_moment",
+        "meme"
+      ],
+      "files": [
+        "24_meme-fail/fail-fs175409.mp3",
+        "24_meme-fail/fail-fs181354.mp3",
+        "24_meme-fail/fail-fs362206.mp3"
+      ],
+      "count": 3,
+      "duration_ms_avg": 5408
+    },
+    "MAGIC": {
+      "description": "Magic, sparkle, twinkle.",
+      "use_cases": [
+        "magic",
+        "sparkle",
+        "twinkle"
+      ],
+      "files": [
+        "25_magic/magic-fs511485.mp3",
+        "25_magic/magic-fs561287.mp3",
+        "25_magic/magic-fs584244.mp3"
+      ],
+      "count": 3,
+      "duration_ms_avg": 13832
+    },
+    "HEARTBEAT": {
+      "description": "Heartbeat, pulse.",
+      "use_cases": [
+        "tension",
+        "anticipation",
+        "fear"
+      ],
+      "files": [
+        "26_heartbeat/heartbeat-fs347836.mp3",
+        "26_heartbeat/heartbeat-fs577074.mp3",
+        "26_heartbeat/heartbeat-fs667436.mp3"
+      ],
+      "count": 3,
+      "duration_ms_avg": 62632
+    }
+  }
+}
