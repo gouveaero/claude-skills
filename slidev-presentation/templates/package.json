@@ -11,12 +11,14 @@
     "export-png": "slidev export --format png --output ./exports/"
   },
   "dependencies": {
-    "@slidev/cli": "^0.50.0",
+    "@slidev/cli": "^52.15.0",
     "@slidev/theme-seriph": "*",
     "@slidev/theme-default": "*",
     "@iconify-json/mdi": "^1.2.0",
     "@iconify-json/heroicons": "^1.2.0",
     "@iconify-json/carbon": "^1.2.0",
+    "@iconify-json/lucide": "^1.2.0",
+    "@iconify-json/tabler": "^1.2.0",
     "@vueuse/motion": "^2.2.0",
     "gsap": "^3.12.5"
   },

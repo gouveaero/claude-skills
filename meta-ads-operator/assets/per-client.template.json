@@ -1,0 +1,32 @@
+{
+  "client_name": "Nome Completo do Cliente",
+  "client_code": "XX",
+  "act_id": "act_XXXXXXXXX",
+  "business_id": "XXXXXXXXX",
+  "page_id": "XXXXXXXXX",
+  "instagram_actor_id": "XXXXXXXXX",
+  "pixel_id": "XXXXXXXXX",
+  "default_currency": "BRL",
+  "timezone": "America/Sao_Paulo",
+  "default_objectives_by_funnel_stage": {
+    "captation": "OUTCOME_LEADS",
+    "awareness": "OUTCOME_AWARENESS",
+    "engagement": "OUTCOME_ENGAGEMENT",
+    "sales": "OUTCOME_SALES"
+  },
+  "naming_convention": "[CC][PROJ][ASSET][YY][PHASE][GEO][AUDIENCE][VAR]",
+  "default_geo": ["BR"],
+  "default_age_range": [25, 65],
+  "default_interests_stack": [],
+  "saved_audiences": {
+    "compradores_180d": "",
+    "leads_60d": "",
+    "lal1_compradores": "",
+    "lal3_compradores": "",
+    "engajadores_ig_60d": "",
+    "video_75p_30d": ""
+  },
+  "learnings_path": "./.meta-ads/learnings.md",
+  "active_projects": [],
+  "notes": ""
+}

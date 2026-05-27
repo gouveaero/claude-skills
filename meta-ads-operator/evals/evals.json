@@ -1,0 +1,61 @@
+{
+  "skill_name": "meta-ads-operator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Sobe uma campanha de captação de leads para o ebook da Dra. Lívia Tolentino, R$50/dia, foco em dentistas no Brasil. Estamos na pasta Exos/Livia_Tolentino/.",
+      "expected_output": "1) Tenta ler .meta-ads.json. 2) Pergunta: oferta, URL do criativo, LP ou lead form nativo, pixel event. 3) Monta estrutura: campaign OUTCOME_LEADS PAUSED, naming [LT][PEP][EBOOK][26][CAPT][BR][INT][V1], 1+ adsets com público dentistas. 4) Roda ads_get_dataset_quality antes de criar. 5) Apresenta resumo completo. 6) Pede confirmação. NÃO chama ads_activate_entity sem 'ok' explícito.",
+      "assertions": [
+        "Uses OUTCOME_LEADS objective (not LEAD_GENERATION)",
+        "Campaign status is PAUSED in creation call",
+        "Naming follows [LT][XX][XX][26][XX][XX][XX][XX] pattern",
+        "Calls ads_get_dataset_quality before creation",
+        "Presents summary before activation",
+        "Does NOT call ads_activate_entity without explicit user approval"
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "A campanha [KL][SEMENTE][INFO][26][CAPT][BR][LAL3][V1] está com CPL acima da meta de R$20. O CPL atual é R$38. O que fazer?",
+      "expected_output": "1) Entra em Mode 3 (Diagnose). 2) Chama ads_insights_performance_trend (last_7d e last_30d, breakdown age+placement). 3) Chama ads_insights_anomaly_signal. 4) Chama ads_insights_auction_ranking_benchmarks. 5) Apresenta tabela de diagnóstico. 6) Identifica causa raiz (quality/engagement/conversion ranking). 7) Propõe UMA mudança específica. 8) Justifica timing (>72h? learning phase?). 9) Pede confirmação antes de aplicar.",
+      "assertions": [
+        "Calls ads_insights_performance_trend before proposing changes",
+        "Calls ads_insights_auction_ranking_benchmarks",
+        "Presents diagnosis table",
+        "Proposes exactly ONE change",
+        "Checks learning phase timing",
+        "Does NOT apply changes without user confirmation"
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Quero montar um funil perpétuo de Meta Ads para o Dr. Kleber. Orçamento R$10.000/mês. Infoproduto de ortodontia.",
+      "expected_output": "1) Entra em Mode 1 (Planning). 2) Invoca launch-strategy skill. 3) Apresenta estrutura completa: 3 campanhas (CBO topo OUTCOME_LEADS, ABO meio OUTCOME_ENGAGEMENT, CBO fundo OUTCOME_SALES). 4) Public-by-public por adset. 5) Naming sugerido [KL][PERP][INFO][26][...]. 6) Budget split sugerido por fase. 7) KPIs por campanha. 8) NÃO cria nada sem confirmação. 9) Pergunta próximo passo: criar estrutura ou revisar planejamento.",
+      "assertions": [
+        "Uses Mode 1 (Planning) not Mode 2 (Launch)",
+        "Presents 3-campaign funnel structure (topo/meio/fundo)",
+        "Includes naming convention in proposal",
+        "Includes budget split recommendation",
+        "Includes KPIs per phase",
+        "Does NOT create any entities without approval"
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Cria 3 variantes de anúncio para teste A/B no adset [LL][WK16MAI26][EVENTO][26][CAPT][BR][LAL1][AS01].",
+      "expected_output": "1) Reconhece que é teste de criativo. 2) Invoca ad-creative skill para gerar os criativos. 3) Pede 3 criativos (URLs) ou explica que pode criar via CLI se paths locais. 4) Cria 3 ads PAUSED com naming V1/V2/V3 no mesmo adset. 5) Explica que CBO distribuirá budget automaticamente. 6) Define como avaliar vencedor (CPL, CTR após 7 dias). 7) Apresenta resumo. 8) Pede confirmação antes de criar.",
+      "assertions": [
+        "Invokes ad-creative skill for creative generation",
+        "Creates 3 ads with V1/V2/V3 naming variants",
+        "All ads created as PAUSED",
+        "Naming follows convention",
+        "Explains evaluation criteria for A/B test",
+        "Does NOT activate without confirmation"
+      ],
+      "files": []
+    }
+  ]
+}

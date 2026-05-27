@@ -1,0 +1,45 @@
+{
+  "$schema": "video-editor-davinci/brand-config.v1",
+  "brand": {
+    "name": "Example Brand",
+    "primary_color": "#1F4D2C",
+    "accent_color": "#B87333",
+    "neutral_color": "#F5F1E8",
+    "background_color": "#0A0A0A",
+    "text_color": "#FFFFFF",
+    "font_family": "Inter",
+    "font_weight_caption": 800,
+    "font_weight_title": 900,
+    "logo": "assets/logo_branco.png",
+    "logo_position": "bottom_right",
+    "watermark_opacity": 0.4
+  },
+  "defaults": {
+    "aspect": "9:16",
+    "fps": 30,
+    "resolution": "1080x1920",
+    "caption_style": "highlight_accent",
+    "color_preset": "warm_high_contrast",
+    "cut_aggressiveness": "medium",
+    "max_clip_duration_seconds": 4.0,
+    "min_clip_duration_seconds": 0.6,
+    "audio_ducking_enabled": true,
+    "audio_ducking_db": -8
+  },
+  "caption": {
+    "position": "bottom_third",
+    "max_chars_per_line": 22,
+    "max_words_per_screen": 4,
+    "stroke_width": 4,
+    "shadow_enabled": true,
+    "uppercase": true,
+    "highlight_word_color": "#B87333",
+    "highlight_animation": "scale_pop"
+  },
+  "voice": {
+    "language": "pt-BR",
+    "whisper_model": "mlx-community/whisper-large-v3-mlx"
+  },
+  "claude_md": "CLAUDE.md",
+  "resolve_project_folder": "Example_Reels"
+}

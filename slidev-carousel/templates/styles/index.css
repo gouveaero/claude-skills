@@ -1,0 +1,51 @@
+/* High-contrast carousel styling — pensado pra leitura em mobile/Instagram. */
+
+:root {
+  --accent: #5eead4;
+  --accent-2: #818cf8;
+  --accent-3: #f472b6;
+  --ink: #f8fafc;
+  --muted: #94a3b8;
+  --bg: #0a0e1a;
+  --bg-soft: #0f172a;
+}
+
+body, .slidev-layout {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.slidev-layout {
+  font-variant-numeric: tabular-nums;
+  padding: 3rem;
+}
+
+.slidev-layout h1 {
+  font-size: clamp(3rem, 7vw, 5rem);
+  letter-spacing: -0.025em;
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.slidev-layout h2 {
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.slidev-layout p, .slidev-layout li {
+  font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+  line-height: 1.5;
+}
+
+.slidev-layout code:not(pre code) {
+  background: rgba(94, 234, 212, 0.14);
+  color: var(--accent);
+  padding: 0.15em 0.5em;
+  border-radius: 6px;
+  font-size: 0.85em;
+}
+
+/* Anti-goto-panel — esconde painel `g` no preview */
+.autocomplete-list { display: none !important; }

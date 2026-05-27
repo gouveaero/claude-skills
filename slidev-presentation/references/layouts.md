@@ -1,8 +1,8 @@
 # Layouts — Reference + decision tree
 
-Slidev oferece 19 layouts built-in. A skill antiga usa apenas 3 (`default`, `center`, `two-cols`); cada deck novo deve variar entre pelo menos 5 layouts diferentes — o impacto visual de cada slide vem em parte do enquadramento que o layout dá.
+Slidev oferece **19 layouts built-in** (verificado em `slidevjs/slidev/packages/client/layouts/` em main). A skill antiga usa apenas 3 (`default`, `center`, `two-cols`); cada deck nova deve variar entre 5+ layouts diferentes — o impacto visual de cada slide vem do enquadramento que o layout dá.
 
-Aplicar layout via frontmatter do slide:
+Aplicar via frontmatter:
 
 ```md
 ---
@@ -10,29 +10,59 @@ layout: cover
 ---
 ```
 
+Fonte canônica: https://sli.dev/builtin/layouts
+
+---
+
+## Lista canônica dos 19 built-ins
+
+| Layout | Propósito | Frontmatter relevante |
+|---|---|---|
+| `center` | Conteúdo centralizado vert+horiz, frase única | — |
+| `cover` | Capa formal com título grande, autor | `background:`, `class:` |
+| `default` | Catch-all bullets/parágrafos | — |
+| `end` | Encerramento da deck | — |
+| `fact` | Estatística como protagonista (1 número grande) | — |
+| `full` | Padding zero, conteúdo livre full-screen | — |
+| `iframe` | Embed full-screen de URL | `url:` |
+| `iframe-left` | Iframe + texto à direita | `url:` |
+| `iframe-right` | Texto + iframe à direita | `url:` |
+| `image` | Imagem como conteúdo principal | `image:`, `backgroundSize:` |
+| `image-left` | Imagem à esquerda, texto à direita | `image:`, `backgroundSize:`, `class:` |
+| `image-right` | Texto à esquerda, imagem à direita | `image:`, `backgroundSize:`, `class:` |
+| `intro` | Sobre o autor / contexto inicial | — |
+| `none` | Sem qualquer estilização (tela em branco) | — |
+| `quote` | Citação destacada com atribuição | — |
+| `section` | Separador de capítulo no meio | — |
+| `statement` | Manifesto / 1 frase com peso | — |
+| `two-cols` | 2 colunas balanceadas | slot default + `::right::` |
+| `two-cols-header` | Header full-width + 2 colunas abaixo | slot default (header) + `::left::` + `::right::` |
+
+**Não inventar nomes**. Layout desconhecido → fallback silencioso ou erro. Se precisa de algo que não existe, **crie um layout custom** (ver § "Custom layouts" abaixo).
+
 ---
 
 ## Decision tree — qual layout escolher
 
 | Slide é... | Layout | Por quê |
 |---|---|---|
-| Capa formal com título grande, autor, contexto inicial | `cover` | É o "tela cheia de filme" — Slidev posiciona texto centralizado com hierarquia tipográfica grande |
+| Capa formal com título grande, autor, contexto inicial | `cover` | "Tela cheia de filme" — Slidev posiciona texto centralizado com hierarquia tipográfica grande |
 | Apresentação do autor / sobre a palestra | `intro` | Espaço para foto + bio + descrição em coluna lateral |
-| Separador de capítulo no meio de uma palestra longa | `section` | Quebra visual, sinaliza nova parte sem ser final |
-| Citação destacada | `quote` | Tipografia maior, atribuição em rodapé, padding correto pra "respirar" |
-| Manifesto / afirmação grande / 1 frase que carrega o slide | `statement` | Tipografia ultra-grande, sem distração lateral |
-| Estatística como protagonista (1 número grande, 1 label) | `fact` | O número fica em primeiro plano; texto auxiliar fica sutil |
-| Imagem dominante (foto, gráfico, screenshot full-width) | `image` | Imagem ocupa toda a área, texto opcional sobreposto |
-| Texto + imagem lado-a-lado (split 50/50) | `image-left` ou `image-right` | Decide qual lado a imagem ocupa |
-| Embed de página web durante demo | `iframe` | URL no frontmatter (`url:`) carrega iframe full-screen |
+| Separador de capítulo no meio | `section` | Quebra visual, sinaliza nova parte sem ser final |
+| Citação destacada | `quote` | Tipografia maior, atribuição em rodapé |
+| Manifesto / 1 frase que carrega o slide | `statement` | Tipografia ultra-grande, sem distração lateral |
+| Estatística como protagonista | `fact` | O número fica em primeiro plano |
+| Imagem dominante full-width | `image` | Imagem ocupa toda a área, texto opcional sobreposto |
+| Texto + imagem lado-a-lado | `image-left` ou `image-right` | Decide qual lado a imagem ocupa |
+| Embed de página web durante demo | `iframe` | `url:` no frontmatter |
 | Embed + texto | `iframe-left` ou `iframe-right` | |
-| 2 colunas balanceadas (comparação, lista dupla) | `two-cols` | **Slot default + `::right::`**, NUNCA `::left::` |
-| Header full-width acima de 2 colunas | `two-cols-header` | Para slides com título grande + comparação abaixo |
-| Conteúdo livre, sem padding | `full` | Tela cheia raw, você controla tudo |
-| Encerramento da apresentação | `end` | Última slide, geralmente em branco ou com CTA discreto |
-| Sem layout (sem estilização default) | `none` | Quando você quer renderizar HTML livre sem nenhum reset |
-| Conteúdo centralizado vertical+horizontal, generic | `center` | Default para "1 frase no meio da tela" |
-| Default catch-all | `default` | Bullet list, parágrafo, qualquer coisa sem necessidade especial |
+| 2 colunas balanceadas | `two-cols` | Slot default + `::right::`, **NUNCA `::left::`** (bug — slot inexistente) |
+| Header + 2 colunas abaixo | `two-cols-header` | Slot default (header) + `::left::` + `::right::` |
+| Conteúdo livre, full-screen | `full` | Tela cheia raw |
+| Sem nada (controle total) | `none` | Tela em branco total |
+| Encerramento | `end` | Última slide |
+| 1 frase no meio da tela | `center` | Centralizado vert+horiz |
+| Default catch-all | `default` | Bullets/parágrafos genéricos |
 
 ---
 
@@ -70,8 +100,6 @@ Gabriel Gouvêa — Engenheiro Aerospacial UFMG, cofundador Exos
 
 ### `section`
 
-Separador entre capítulos. Tipografia grande, geralmente fundo distinto.
-
 ```md
 ---
 layout: section
@@ -99,7 +127,7 @@ Martin Fowler
 layout: statement
 ---
 
-# Slidev é vue 3 disfarçado de markdown.
+# Slidev é Vue 3 disfarçado de markdown.
 ```
 
 ### `fact`
@@ -114,7 +142,17 @@ layout: fact
 mais alcance que post único — carrosséis no Instagram em 2026
 ```
 
-Combine com `<StatNumber>` para counter animado, ou `<CalloutBadge>` na lateral.
+Combine com `<StatNumber>` (counter animado) ou `<CalloutBadge>` (badge lateral).
+
+### `image`
+
+```md
+---
+layout: image
+image: /full-screenshot.png
+backgroundSize: contain
+---
+```
 
 ### `image-left` / `image-right`
 
@@ -129,16 +167,7 @@ image: /screenshot.png
 3 contextos misturados num único componente
 ```
 
-### `image`
-
-```md
----
-layout: image
-image: /full-screenshot.png
----
-```
-
-### `iframe`
+### `iframe` / `iframe-left` / `iframe-right`
 
 ```md
 ---
@@ -169,7 +198,9 @@ layout: two-cols
 - Rollback git revert
 ```
 
-**Erro comum**: usar `::left::`. Esse slot não existe; conteúdo entre `::left::` e `::right::` desaparece silenciosamente. Coluna esquerda fica no slot default (sem marcador).
+**Erro comum**: usar `::left::`. Esse slot **não existe** em `two-cols`; conteúdo entre `::left::` e `::right::` some silenciosamente. Coluna esquerda vai no slot default (sem marcador). 
+
+Em **`two-cols-header`** o `::left::` existe (slot é definido explicitamente — slot default vira o header):
 
 ### `two-cols-header`
 
@@ -178,7 +209,7 @@ layout: two-cols
 layout: two-cols-header
 ---
 
-# Comparação completa
+# Header full-width acima das colunas
 
 ::left::
 
@@ -189,11 +220,9 @@ Coluna esquerda
 Coluna direita
 ```
 
-(Aqui `::left::` funciona porque o layout o define explicitamente.)
-
 ### `full` e `none`
 
-Use quando você precisa do canvas inteiro sem nenhum constraint do tema. `full` ainda aplica fonts/background; `none` é tela em branco total.
+`full` aplica fonts/background do tema; `none` é tela em branco total. Use quando precisa do canvas inteiro sem constraint do tema.
 
 ### `end`
 
@@ -203,14 +232,63 @@ layout: end
 ---
 ```
 
-Geralmente combina com `<QuoteReveal>` ou um CTA discreto.
+Combine com `<QuoteReveal>` ou CTA discreto.
 
 ### `center` e `default`
 
-Catch-all. Use `center` quando o conteúdo é uma frase única que cabe no meio; `default` para qualquer conteúdo regular.
+Catch-all. `center` para frase única que cabe no meio; `default` para qualquer conteúdo regular.
 
 ---
 
-## Anti-pattern
+## Custom layouts
 
-Se 60%+ do deck for `default` ou `center`, **revise** — você está sub-utilizando os outros 17 layouts. Cada layout existe porque enquadra o conteúdo de forma diferente; um deck de 12 slides deve variar entre 5–7 layouts.
+Para layouts que não cobrem 100% do caso, **crie um arquivo Vue em `layouts/`** da deck. Slidev auto-importa por nome de arquivo.
+
+### Exemplo: layout "split-with-aside" custom
+
+`layouts/SplitWithAside.vue`:
+
+```vue
+<template>
+  <div class="grid grid-cols-[2fr_1fr] gap-8 h-full p-12">
+    <div class="main">
+      <slot />
+    </div>
+    <aside class="border-l-2 pl-6">
+      <slot name="aside" />
+    </aside>
+  </div>
+</template>
+```
+
+Uso:
+
+```md
+---
+layout: split-with-aside
+---
+
+# Conteúdo principal
+
+Lista, parágrafos, etc.
+
+::aside::
+
+Sidebar opcional
+```
+
+Slidev resolve `split-with-aside` → `layouts/SplitWithAside.vue` (kebab-case ↔ PascalCase). Slot named via `::aside::` em markdown.
+
+### Quando criar custom
+
+- Precisa de header + 3 colunas (nenhum built-in faz isso).
+- Precisa de overlay específico (logo no canto + watermark + conteúdo).
+- Layout repetido em 5+ slides com mesma estrutura — DRY.
+
+Para 1 slide só, prefira HTML/CSS inline no slide direto.
+
+---
+
+## Anti-pattern: layout monoculture
+
+Se 60%+ da deck for `default` ou `center`, **revise**. Cada layout existe porque enquadra o conteúdo de forma diferente; uma deck de 12 slides deve variar entre 5–7 layouts. Slides "respiro" (1 imagem ou frase grande) em `image`, `fact`, ou `statement` quebram o ritmo.

@@ -1,0 +1,44 @@
+{
+  "name":       "TriboTax",
+  "slug":       "tribotax",
+  "voice_tone": "editorial, sóbrio, técnico, confiante; português; sem superlativos; voz de Mentor/Guia — o cliente é o Herói",
+  "vocabulary_use":   ["conduzir", "apurar", "atestar", "revisar", "sucessão", "estruturar", "recuperar", "diagnosticar"],
+  "vocabulary_avoid": ["solução", "disruptivo", "jornada", "compliance", "potencializar", "ROI", "garantimos", "prometemos", "certeza", "melhor"],
+  "compliance_notes": "OAB: nunca prometer resultado matemático nem garantir vitória judicial. Sempre citar fundamento legal (REsp, Tema STJ, lei). Todo MoFu/BoFu exige ancoragem jurídica real. Nunca inventar jurisprudência.",
+
+  "colors": {
+    "bg":         "#F6F1E8",
+    "bg_alt":     "#EFE7D8",
+    "bg_deep":    "#14251D",
+    "fg":         "#121210",
+    "fg_muted":   "#55544E",
+    "fg_on_deep": "#E7DEC9",
+    "accent":     "#8F3A2E",
+    "accent_alt": "#C07D6E"
+  },
+
+  "fonts": {
+    "display": "Cormorant Garamond, Garamond, Georgia, serif",
+    "body":    "Inter Tight, Inter, system-ui, sans-serif",
+    "mono":    "JetBrains Mono, IBM Plex Mono, ui-monospace, monospace"
+  },
+
+  "google_fonts_url": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
+
+  "aspect_ratio": "1080x1350",
+
+  "logo": {
+    "kind": "svg-symbol",
+    "src":  "#tt-mark"
+  },
+
+  "footer": {
+    "handle":  "@dralexamadeu",
+    "website": "tribotax.com.br"
+  },
+
+  "extras": {
+    "stylesheet_imports": ["../../site-handoff/site-tribotax/project/assets/css/tokens.css"],
+    "script_imports":     ["../../site-handoff/site-tribotax/project/assets/js/deck-stage.js"]
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "$schema_comment": "Per-client tracking config. Lives at <ClientFolder>/.tracking.json. Values marked <FILL> are placeholders; *_env keys carry the NAME of the env var, never the value.",
+
+  "client_code": "<FILL: short uppercase code, e.g. LL, ET, KM>",
+  "client_name": "<FILL: human-readable name>",
+  "site_path": "<FILL: relative path from ClientFolder, e.g. site or website>",
+  "stack": "<FILL: nextjs-app-router | vite-react-spa>",
+
+  "deploy": {
+    "platform": "coolify",
+    "vps": "<FILL: exos | personal>",
+    "coolify_url": "<FILL: https://coolify.exosmkt.com OR https://coolify.gabrielgouvea.com.br>",
+    "primary_domain": "<FILL: e.g. leticialang.exosmkt.com>",
+    "tracking_endpoint": "/api/track",
+    "sidecar": {
+      "needed": "<FILL: true for vite-react-spa, false for nextjs-app-router>",
+      "service_name": "<FILL when needed: e.g. leticialang-tracking>",
+      "subdomain": "<FILL when needed: e.g. track.leticialang.exosmkt.com>"
+    }
+  },
+
+  "platforms": {
+    "meta": {
+      "enabled": false,
+      "pixel_id": "",
+      "capi_token_env": "META_CAPI_TOKEN",
+      "test_event_code_env": "META_TEST_EVENT_CODE",
+      "graph_version_env": "META_GRAPH_VERSION",
+      "ldu_us_states": false,
+      "_help": "Get pixel_id from Events Manager. Generate CAPI token at Events Manager → Settings → Conversions API → Generate Access Token. Leave test_event_code_env empty in production."
+    },
+
+    "google_ads": {
+      "enabled": false,
+      "conversion_id": "",
+      "conversion_labels": {
+        "_help": "One label per event type: { \"Lead\": \"abc/xyz\", \"Purchase\": \"abc/qrs\" }. Generated in Google Ads → Tools → Conversions → New conversion action.",
+        "Lead": "",
+        "Purchase": "",
+        "Schedule": "",
+        "Contact": ""
+      },
+      "_help": "conversion_id format: AW-123456789. Enhanced Conversions for Web fires automatically via gtag once user_data is set."
+    },
+
+    "ga4": {
+      "enabled": false,
+      "measurement_id": "",
+      "api_secret_env": "GA4_API_SECRET",
+      "region": "us",
+      "debug_mode": false,
+      "_help": "measurement_id format: G-XXXXXXXXX. api_secret generated in GA4 Admin → Data Streams → Web → Measurement Protocol API secrets. region: 'us' or 'eu' (region1.google-analytics.com)."
+    },
+
+    "tiktok": {
+      "enabled": false,
+      "pixel_id": "",
+      "access_token_env": "TIKTOK_ACCESS_TOKEN",
+      "test_event_code_env": "TIKTOK_TEST_EVENT_CODE",
+      "_help": "pixel_id is a hex string from TikTok Events Manager. Access token generated at Events Manager → Settings → Generate Access Token."
+    }
+  },
+
+  "consent": {
+    "lgpd_mode": "off",
+    "default_state": "granted",
+    "granular": false,
+    "banner": "external",
+    "_help": "lgpd_mode: 'off' (no gating, pixels fire freely) | 'gated' (banner blocks pixels until accept). When 'gated': default_state controls pre-interaction behavior, granular adds per-purpose toggles, banner: 'external' (you have your own) | 'builtin' (use assets/lgpd-consent-banner.tsx)."
+  },
+
+  "events": [
+    {
+      "name": "PageView",
+      "fire_on": "every_route",
+      "_help": "Universal event name. See references/universal-event-layer.md for name mapping per platform."
+    },
+    {
+      "name": "Lead",
+      "fire_on": "form_submit",
+      "selector": "<FILL: CSS selector for form, e.g. #hero-form, [data-form='lead']>",
+      "params": {
+        "_help": "Static params per fire. Dynamic params (email, phone) are passed at call site."
+      }
+    }
+  ],
+
+  "_skill_metadata": {
+    "skill_version": "tracking-pixels-v1",
+    "installed_at": "<FILL on first install: ISO date>",
+    "last_modified_at": "<auto-updated by skill>"
+  }
+}

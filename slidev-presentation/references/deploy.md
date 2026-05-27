@@ -48,6 +48,14 @@ cp -r <deck-path>/dist $SLIDES_HUB_DIR/decks/<slug>/
 
 Sobrescreve o slug se já existir (a checagem de colisão acontece **antes** do deploy, na fase de briefing — via `scripts/check-slug-collision.sh`).
 
+### 2.5. Regenerar `index.html` do hub
+
+```bash
+node scripts/regen-hub-index.mjs $SLIDES_HUB_DIR
+```
+
+Atualiza `slides-hub/index.html` com a lista de todos os decks publicados em `decks/*` (ordenados por mtime descendente). Cada deck vira `<li><a href="/<slug>/">{title}</a></li>`. Sem esse passo, o root `slides.gabrielgouvea.com.br/` mostra placeholder estático apesar dos decks existirem.
+
 ### 3. Commit e push
 
 ```bash
@@ -126,7 +134,7 @@ slides-hub/
 │   └── ...
 ├── Dockerfile               # nginx:alpine
 ├── nginx.conf               # SPA routing por subpath
-├── index.html               # root listing (opcional, "impeccable" design)
+├── index.html               # root listing (regenerado por regen-hub-index.mjs em cada deploy)
 └── README.md
 ```
 

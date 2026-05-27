@@ -44,10 +44,14 @@ mkdir -p "$hub_dir/decks"
 rm -rf "$hub_dir/decks/$slug"
 cp -r "$deck_path/dist" "$hub_dir/decks/$slug"
 
+echo ">>> 2.5/5  Regenerating hub index.html"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+node "$script_dir/regen-hub-index.mjs" "$hub_dir"
+
 echo ">>> 3/5  Committing and pushing to slides-hub"
 (
   cd "$hub_dir"
-  git add "decks/$slug/"
+  git add "decks/$slug/" index.html
   if git diff --cached --quiet; then
     echo "  No changes to commit (deck identical to last deploy)."
   else

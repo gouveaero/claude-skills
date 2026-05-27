@@ -4,6 +4,42 @@ Quatro categorias: **componentes Slidev built-in** (~20, auto-registrados), **co
 
 ---
 
+## Regra de ouro do auto-import
+
+Slidev auto-registra **automaticamente** qualquer arquivo `*.vue` em:
+
+- `components/` — auto-import por nome do arquivo (PascalCase ↔ kebab-case).
+- `layouts/` — auto-import como `layout:` value.
+- `pages/` (raro) — slides parciais.
+
+**Se você usar `<StatNumber>` no `slides.md`, o arquivo `components/StatNumber.vue` PRECISA existir no projeto da deck.** Sem isso, Vue não acha o componente e renderiza tag literal (`<statnumber>` em lowercase no DOM) — visualmente quebrado.
+
+A skill resolve isso copiando `templates/components/*.vue` inteiro para a deck na Phase 4 §2. Se você criar componente novo durante a Phase 4, **coloque em `components/` no momento que escrever a tag no `slides.md`**, não depois.
+
+### Iconify components
+
+Iconify expõe ícones como tags Vue auto-importadas via plugin. Mas precisa do **dataset** instalado:
+
+```bash
+# Para usar <mdi-arrow-right />
+npm i -D @iconify-json/mdi
+
+# Para usar <lucide-cooking-pot />
+npm i -D @iconify-json/lucide
+
+# Para usar <heroicons-bolt-solid />
+npm i -D @iconify-json/heroicons
+
+# Para usar <carbon-rocket />
+npm i -D @iconify-json/carbon
+```
+
+Sem o dataset, a tag renderiza vazia (ícone não aparece). O template da skill já vem com `@iconify-json/mdi`, `@iconify-json/lucide`, `@iconify-json/heroicons`, `@iconify-json/carbon` em `devDependencies` — esses cobrem 95% dos usos. Se precisar de outro set (Tabler, Phosphor, etc.), adicione `@iconify-json/<set>` ao `package.json`.
+
+O `lint-deck.mjs` (Phase 4.5b) checa: pra cada `<prefixo-nome>` (que parece tag Iconify), confirma que `@iconify-json/<prefixo>` está em deps. Faltando = FAIL com sugestão exata de comando.
+
+---
+
 ## Slidev built-in components
 
 ### Reveal e click

@@ -52,27 +52,58 @@ Confirme em uma frase curta o que entendeu antes de ir pro outline.
 
 ### Phase 3 — Outline approval
 
-Produza uma tabela slide-a-slide:
+Produza uma tabela slide-a-slide. **Número de slides é função do tempo de fala e da densidade** — não há template fixo. Use um dos 3 shapes abaixo como ponto de partida e ajuste.
 
-| # | Título | Propósito | Layout | Componente / Feature destaque |
-|---|--------|-----------|--------|-------------------------------|
-| 1 | Hook | abertura provocativa | `cover` | `<AutoFitText>` + transição `view-transition` |
-| 2 | Por que isso importa | gancho emocional | `quote` | `<QuoteReveal>` |
-| 3 | Estado atual | retrato do problema | `fact` | `<StatNumber>` + `<CalloutBadge>` |
-| 4 | Antes/depois código | refactoring story | `default` | **Shiki Magic Move** (3 estados) |
-| 5 | Arquitetura | sistema em fluxo | `default` | Mermaid sequence diagram |
-| 6 | Métricas | KPIs medidos | `default` | `<MetricGrid>` |
-| 7 | Roadmap | timeline visual | `default` | `<Timeline>` + `v-motion` stagger |
-| 8 | Pergunta pra audiência | interatividade | `default` | `<InteractivePoll>` |
-| 9 | Cálculo de ROI ao vivo | manipulação reativa | `default` | `<ROICalculator>` |
-| 10 | Próximos passos | CTA | `statement` | `<v-clicks>` + Iconify icons |
-| 11 | Obrigado | encerramento | `end` | `<QuoteReveal>` final |
+#### Shape A — Curto (5–7 slides, 5–12 min)
 
-Guidelines:
-- 8–15 slides para 20–30 min. Ajuste proporcional.
-- Alterne slides densos com slides "respiro" (1 imagem ou frase grande).
-- **Variar layouts.** Se mais de 60% do deck for `default` ou `center`, está sub-utilizando os outros 17.
-- **Variar transições.** `view-transition` global + per-slide `slide-left` / `slide-up` / `fade` quando a mudança de ritmo for intencional.
+Pitch rápido, demo, comunicado interno, anúncio.
+
+| # | Propósito | Layout | Feature destaque |
+|---|---|---|---|
+| 1 | Hook + tese em 1 frase | `cover` | `<AutoFitText>` |
+| 2 | Problema | `fact` ou `statement` | `<StatNumber>` |
+| 3 | Solução | `default` ou `two-cols` | Imagem ou Mermaid |
+| 4 | Como funciona | `default` | Magic Move ou Mermaid |
+| 5 | Resultado | `fact` | `<StatNumber>` + `<v-clicks>` |
+| 6 | CTA | `statement` | `<v-clicks>` + Iconify |
+| 7 | (opcional) Obrigado/contato | `end` | — |
+
+#### Shape B — Médio (8–12 slides, 15–25 min)
+
+Palestra técnica de meetup, aula de bootcamp, sales pitch B2B.
+
+| # | Propósito | Layout sugerido | Feature destaque |
+|---|---|---|---|
+| 1 | Hook | `cover` | `<AutoFitText>` |
+| 2 | Bio rápida | `intro` | — |
+| 3 | Tese / por que importa | `quote` ou `statement` | `<QuoteReveal>` |
+| 4 | Estado atual / problema | `fact` | `<StatNumber>` |
+| 5 | Mergulho técnico A | `default` | Magic Move ou snippet `<<<` |
+| 6 | Diagrama de arquitetura | `default` | Mermaid |
+| 7 | Mergulho técnico B | `two-cols` ou `image-right` | Comparison ou print |
+| 8 | Resultado / métricas | `default` | `<MetricGrid>` |
+| 9 | Lições / takeaways | `statement` | `<v-clicks>` |
+| 10 | Próximos passos / CTA | `default` | `<v-clicks>` + Iconify |
+| 11 | Obrigado + contato | `end` | `<QuoteReveal>` |
+
+#### Shape C — Longo (13–20 slides, 30–60 min)
+
+Keynote, workshop, defesa acadêmica, deep-dive interno.
+
+Estrutura recomendada (capítulos):
+- Abertura (1–2): cover + intro
+- Setup do problema (2–3): quote/fact + statement + dados
+- **Section break** (`layout: section`) entre capítulos
+- Conteúdo principal em 2–3 capítulos de 3–5 slides cada
+- Demo ou interatividade (1–2): `<InteractivePoll>`, `<ROICalculator>`, iframe live
+- Síntese e takeaways (1–2): statement + Toc
+- Encerramento (1): end
+
+Guidelines de ritmo:
+- Alterne slides densos com slides "respiro" (1 imagem grande, 1 frase, 1 número).
+- **Variar layouts** — se >60% do deck for `default` ou `center`, está sub-utilizando os 17 outros. Use 5+ layouts diferentes por deck.
+- **Variar transições com intenção** — headmatter `transition: slide-left | slide-right` + `clickAnimation: up` define o tom; quebre só em pontos narrativos (section break = `fade`, fact de impacto = `zoom`, comparação A→B no mesmo frame = `view-transition`).
+- **Coerência > novidade** — um deck inteiro com mesmo estilo de reveal (`up`) parece intencional; um deck com 5 estilos diferentes parece bagunçado.
 
 Termine com a pergunta literal: **"Aprova esse outline? Posso gerar a apresentação?"** Não gere sem aprovação explícita.
 
@@ -97,43 +128,56 @@ Termine com a pergunta literal: **"Aprova esse outline? Posso gerar a apresenta�
    - Checklist por slide: título não aparece como "undefined" no sidebar; conteúdo de primeiro nível visível; nenhum overflow; componentes custom renderizam.
    - **Se algo falhar, corrija antes de reportar.** Bugs conhecidos em `references/components.md` §"Pitfalls".
 
-### Phase 4.5 — Self-critique (obrigatório antes de declarar pronto)
+### Phase 4.5 — Validação (obrigatório antes de declarar pronto)
 
-Antes de declarar o deck pronto ou rodar Phase 5 (Deploy), execute o critique automático:
+Dois checks complementares, ambos precisam passar (exit 0) antes da Phase 5 ou de reportar pronto.
+
+#### Phase 4.5a — `lint-deck.mjs` (correção técnica)
+
+Checa problemas que quebram a deck em produção. Roda **primeiro** (sem dev server, rápido).
 
 ```bash
-node "<SKILL_DIR>/scripts/self-critique.mjs" "<TARGET>" --visual --url http://localhost:3030/gabriel-trajetoria
+node "<SKILL_DIR>/scripts/lint-deck.mjs" "<TARGET>"
+```
+
+Cobre:
+- Caminhos de imagem inválidos (`<img src="/foo">` sem `public/foo` correspondente).
+- Componentes usados sem o arquivo `components/*.vue` correspondente.
+- Iconify tags (`<mdi-*>`, `<lucide-*>`) sem `@iconify-json/<set>` em deps.
+- Layouts inválidos (não está nos 19 built-ins nem em `layouts/*.vue`).
+- `var(--foo)` referenciada sem `--foo:` declarado em algum `:root` ou `<style>` do mesmo slide.
+- `<v-clicks>` / `<v-click>` (component) abertos sem fechamento correspondente.
+- `mdc:` legacy no headmatter (WARN — sugere migrar para `comark:`).
+- `npm run build --base /TEST/` dry-run (FAIL se quebrar).
+
+Saída: relatório markdown com FAILs (bloqueiam) e WARNs (informam). Sem FAIL → exit 0.
+
+#### Phase 4.5b — `self-critique.mjs` (qualidade estética)
+
+Roda **depois** do lint, opcionalmente com dev server up para checks visuais.
+
+```bash
+node "<SKILL_DIR>/scripts/self-critique.mjs" "<TARGET>" --visual --url http://localhost:3030/<slug>
 # Ou sem visual (só estático, mais rápido):
 node "<SKILL_DIR>/scripts/self-critique.mjs" "<TARGET>"
 ```
 
-O script checa **objetivamente**:
+Cobre estética:
+- Word count, H1 count, layout monoculture, gradient text, em-dash overuse, side-stripe borders, pure #000/#fff, identical card grids, glassmorphism overuse, font count, premium features uso.
+- Com `--visual`: element overflow do slide bounds, color count por slide.
 
-- Word count por slide (>60 = WARN)
-- H1 count por slide (>2 = WARN)
-- Layout monoculture (>60% default/center = WARN)
-- Gradient text overuse (>1 slide com gradient = FAIL)
-- Em-dash overuse (≥3 em ≥3 slides = WARN)
-- Side-stripe borders (border-left/right >1px = FAIL)
-- Pure #000/#fff (WARN)
-- Identical card grids (≥6 cards iguais = WARN)
-- Glassmorphism overuse (>2 backdrop-filter por slide = WARN)
-- Font count global (>4 fontes = WARN)
-- Premium feature usage (0 features Slidev premium = WARN)
-- (com --visual) Element overflow do slide bounds (FAIL)
-- (com --visual) Color count por slide (>12 cores = WARN)
+**Hard rule**: ambos exit 0 (sem FAILs) é pré-requisito pra reportar pronto.
 
-**Hard rule**: exit code 0 (sem FAILs) é pré-requisito pra reportar deck pronto.
+Workflow ordenado:
+1. Após escrever `slides.md` → rodar `lint-deck.mjs`. FAILs aqui são **estruturais** (imports, paths, layouts inválidos) — corrigir.
+2. Re-rodar `lint-deck.mjs` até exit 0.
+3. Rodar `self-critique.mjs` estático.
+4. Subir dev server (`npm run dev` background).
+5. Rodar `self-critique.mjs --visual --url <localhost>/<slug>`.
+6. Corrigir FAILs visuais.
+7. Sweep manual no Chrome DevTools MCP (Phase 4 §8) — checks subjetivos.
 
-Workflow:
-1. Rodar `self-critique.mjs` em modo estático após escrever slides.md.
-2. Se FAIL → corrigir e re-rodar até passar.
-3. WARNs revisar: muitos são opcionais (slide-count, word-count denso), mas leia cada um.
-4. Rodar dev server.
-5. Rodar `--visual --url http://localhost:3030/<slug>` pra pegar overflow e color count.
-6. Corrigir FAILs visuais. Re-rodar até passar.
-
-Os checks **subjetivos** (color strategy commitida, hierarquia visível, AI slop test, register brand-vs-product) ficam pra você durante Phase 4 — leia `references/design-quality.md` antes de gerar slides.md. O critique automático é safety net, não substituto do julgamento.
+Os checks **subjetivos** (color strategy commitida, hierarquia visível, AI slop test, register brand-vs-product) ficam pra você durante Phase 4 — leia `references/design-quality.md` antes de gerar slides.md. Os critiques automáticos são safety net, não substituto do julgamento.
 
 ### Phase 5 — Deploy (condicional — só se Phase 2 confirmou)
 
@@ -156,11 +200,16 @@ Detalhes do fluxo em `references/deploy.md`. Setup único do hub em `references/
 
 Slidev oferece muito mais que `v-click` + Shiki. Para qualquer slide, primeiro avalie se uma feature mais expressiva cabe.
 
+**Versão atual** (set/2024 → mai/2026): mudanças em v0.48+ (sistema de clicks reescrito, presets nomeados, alerts nativos, `comark:` renamed de `mdc:`) estão em `references/v52-features.md`. **Sempre consulte** antes de gerar — features ali são frequentemente as que distinguem uma deck cinematográfica de uma deck plana.
+
 **Design quality (LEIA ANTES DE ESCREVER SLIDES.md)**: `references/design-quality.md` — princípios curados de UI/UX adaptados para deck (register brand/product, color strategy 4 níveis, tipografia em slides, banimentos absolutos, AI slop test, checklist Phase 4). Os checks objetivos rodam automaticamente em Phase 4.5, mas os subjetivos (color strategy, hierarquia, AI slop) só você consegue julgar — interna-los antes de escrever evita iterações.
 
 | Quando o slide é... | Use | Documentado em |
 |---|---|---|
 | Reveal de uma lista, parágrafo, ou step | `<v-click>`, `<v-clicks>`, `<v-after>`, presets `.scale` / `.fade.right` / `.up` | `references/animations.md` |
+| Callout inline em texto (note, warning, etc.) | `> [!NOTE]`, `> [!WARNING]`, `> [!TIP]` (v52.15+) | `references/v52-features.md` |
+| Migrar deck antiga com `mdc: true` | Trocar para `comark: true` (renamed v52.14) | `references/v52-features.md` |
+| Embed de post BlueSky | `<BlueSky post="...">` (v52.15+) | `references/v52-features.md` |
 | Movimento posicional / stagger / scale-bounce | `v-motion` (com `@vueuse/motion`) | `references/animations.md` |
 | Alternar estado A → B (problema vs solução, antes vs depois) | `<v-switch>` ou `<ComparisonSplit>` | `references/animations.md` + `references/components.md` |
 | Antes/depois de código com transição animada | **Shiki Magic Move** (bloco `````magic-move`) | `references/code-features.md` |
@@ -182,6 +231,9 @@ Slidev oferece muito mais que `v-click` + Shiki. Para qualquer slide, primeiro a
 
 ### Layouts (19 built-in, mapeados em `references/layouts.md`)
 
+Lista canônica dos 19 (verificada em `slidevjs/slidev/packages/client/layouts/`):
+`center`, `cover`, `default`, `end`, `fact`, `full`, `iframe`, `iframe-left`, `iframe-right`, `image`, `image-left`, `image-right`, `intro`, `none`, `quote`, `section`, `statement`, `two-cols`, `two-cols-header`.
+
 | Slide é... | Layout |
 |---|---|
 | Capa formal com título grande | `cover` |
@@ -193,13 +245,15 @@ Slidev oferece muito mais que `v-click` + Shiki. Para qualquer slide, primeiro a
 | Imagem como conteúdo principal | `image` |
 | Split com imagem à esquerda/direita | `image-left` / `image-right` |
 | Embed de web page durante demo | `iframe` / `iframe-left` / `iframe-right` |
-| 2 colunas balanceadas | `two-cols` (slot default + `::right::`, **nunca** `::left::` — bug conhecido) |
-| Header full-width + 2 colunas abaixo | `two-cols-header` |
+| 2 colunas balanceadas | `two-cols` (slot default + `::right::`, **nunca** `::left::` em `two-cols` — slot inexistente) |
+| Header full-width + 2 colunas abaixo | `two-cols-header` (aqui `::left::` e `::right::` ambos funcionam) |
 | Padding zero, slide preenche viewport | `full` |
 | Encerramento | `end` |
 | Conteúdo geral / default | `default` |
 | Sem estilização, layout livre | `none` |
 | Conteúdo centrado vertical e horizontalmente | `center` |
+
+**Se precisar de layout que não está nessa lista, crie custom em `layouts/<Nome>.vue` da deck** — não invente nome de built-in. Slidev fallback silencioso quando layout não existe. Ver `references/layouts.md` § "Custom layouts".
 
 ### Componentes custom (em `templates/components/`)
 
@@ -223,17 +277,55 @@ Full API em `references/components.md`.
 
 ## Hard rules
 
-- **NEVER skip** Discovery (Phase 2) nem Outline approval (Phase 3). Mesmo que o prompt do usuário seja rico, confirme antes de gerar.
-- **NEVER use** `::left::` no layout `two-cols` — slot inexistente, conteúdo some silenciosamente. Coluna esquerda vai no slot default, direita em `::right::`.
-- **NEVER coloque** `<style>` entre o frontmatter global e o slide 1 — vira parte do YAML e corrompe o parsing.
-- **NEVER indente** `<v-click>` com 4+ espaços do início da linha — markdown CommonMark interpreta como bloco de código.
-- **NEVER use** comentários HTML `<!-- -->` dentro de blocos `<div>` extensos em markdown — o parser MDC fecha o bloco no comentário e o resto renderiza como código literal. Use comentário CSS dentro de `<style>` scoped, ou remova de vez.
-- **NEVER deixe linhas em branco** dentro de um bloco HTML multi-elemento (ex: `<div class="grid"> ... \n\n ... </div>`) — markdown trata como quebra de bloco e estoura o parsing. Compacte tudo em uma linha contínua ou use indentação contínua sem linhas vazias.
-- **NEVER use** `v-after` / `v-click.hide` para disparar animações CSS na PRIMEIRA visualização. As `@keyframes` rodam quando o elemento monta no DOM, não no click — então a primeira vez não anima. Fix: **separar em DOIS slides distintos** (splash em slide 1, animação em slide 2) — assim a animação dispara naturalmente ao montar o slide 2.
+Cada regra com pareamento "do this instead". Quando hesitar, leia o "why" — quase todas vêm de bugs reais que se repetiram em decks antigas.
+
+### Processo
+
+- **Skip Discovery (Phase 2) ou Outline approval (Phase 3) é proibido**, mesmo com prompt rico. Faça as perguntas que sobraram após Phase 1 e confirme outline antes de gerar. **Why**: o slug, o deploy, e o público são quase nunca explícitos no prompt inicial; gerar sem perguntar costuma exigir rework completo.
+
+### Animações e clicks
+
+- **Não misture `v-click` directive com `<v-click>` component no mesmo slide.** Escolha um padrão. **Why**: ambos funcionam mas confundem a contagem visual de clicks. **Do**: directive (`<div v-click>`) pra HTML simples; component (`<v-click>`) só quando precisar envolver markdown bruto que precisa de parsing.
+- **`v-click` sem valor = `'+1'` (próximo click), não "todos juntos".** 3 elementos com `<div v-click>` revelam em 1, 2, 3 — em sequência. **Do**: pra revelar 2+ no mesmo click, use `<v-after>` ou `v-click="N"` absoluto. Ver `references/animations.md`.
+- **Não use `v-after` ou `v-click.hide` para disparar `@keyframes` na primeira visualização.** **Why**: keyframes rodam quando o elemento monta no DOM, não no click. **Do**: separar em DOIS slides — splash no slide N, animação no slide N+1.
+- **Defina a estética de animação no headmatter** (`transition: slide-left | slide-right` + `clickAnimation: up`) e quebre só com intenção narrativa. **Why**: decks que decidem transição caso a caso ficam visualmente incoerentes.
+
+### Layouts
+
+- **Use só layouts da lista canônica de 19** (em `references/layouts.md`) ou crie custom em `layouts/<Nome>.vue` da deck. **Why**: layouts inventados (ex: imaginar que existe `two-cols-with-header-and-sidebar`) sofrem fallback silencioso. **Do**: se nada da lista cabe, criar custom — 10 linhas em Vue resolvem.
+- **Em `layout: two-cols`, NUNCA use `::left::`** — slot não existe; conteúdo some silenciosamente. Coluna esquerda vai no slot default; direita em `::right::`. **Em `two-cols-header`**, `::left::` e `::right::` ambos funcionam (slot default vira o header).
 - **Layout default precisa de** `padding-bottom: 2.5rem+` no `.slidev-layout`. Padding inferior padrão (1.5–2rem) corta insights/conclusões em projetores com aspect ratios diferentes.
-- **Slides com 5+ cards verticais** correm risco de cortar o último item em viewports não-16:9. Padding vertical dos cards deve ser ≤ 0.55rem cada para 5 itens caberem com folga. Sempre teste em `?clicks=99` para ver o estado final.
+
+### Imagens e assets
+
+- **Nunca use `<img src="/Users/...">` (path absoluto local) nem `<img src="../../../algo.png">` (relativo subindo).** **Do**: coloque o arquivo em `public/<nome>.png` da deck → referencie `<img src="/<nome>.png">`. Vite resolve `--base` corretamente. Ver `references/styling.md` § "Assets".
+
+### Componentes e Iconify
+
+- **Toda tag PascalCase (`<StatNumber>`, `<QuoteReveal>`) referenciada precisa do arquivo `components/StatNumber.vue` no projeto da deck.** **Do**: Phase 4 §2 copia `templates/components/*.vue` inteiro; se criar componente novo, crie em `components/` no momento que escrever a tag. **Why**: sem o arquivo, Vue não acha; tag renderiza literal e o slide quebra visualmente.
+- **Toda tag Iconify (`<mdi-*>`, `<lucide-*>`, `<heroicons-*>`) precisa de `@iconify-json/<set>` em `devDependencies`.** Template já vem com `mdi`, `lucide`, `heroicons`, `carbon`. Se usar outro set (`tabler-*`, `phosphor-*`), `npm i -D @iconify-json/<set>` antes de declarar pronto.
+
+### CSS
+
+- **Toda `var(--foo)` referenciada precisa de declaração `--foo:` em `:root` de `styles/index.css` ou em `<style>` do mesmo slide.** **Why**: temas Slidev expõem ~10 vars apenas; usar `var(--gold)` sem declarar é silencioso (fallback) e visualmente quebrado.
+- **`<style>` em slide é sempre scoped (implícito), sem opt-out.** Combinators de filho (`.a > .b`) silently break porque o atributo `[data-v-hash]` não chega no filho. **Do**: aplicar classes diretamente, ou usar `:deep(.child)`.
+- **Não coloque `<style>` entre o frontmatter global e o slide 1** — vira parte do YAML e corrompe o parsing.
+
+### Markdown + Vue
+
+- **Indentação ≥4 espaços vira bloco de código no CommonMark.** **Do**: 0 ou 2 espaços para wrappers `<v-click>`, `<div>`, etc.
+- **Wrappers Vue de bloco (`<v-clicks>`, `<v-click>` component, `<template #right>`) precisam de linha em branco antes E depois do markdown interno.** Sem isso, markdown-it pula e tudo vira HTML literal.
+- **`<div>` puro envolvendo markdown NÃO deve ter linhas em branco internas** — markdown trata como fim de bloco e quebra. (Regra oposta da anterior; depende se é wrapper Vue ou HTML puro.)
+- **Não use `<!-- comentário -->` dentro de blocos `<div>` extensos em markdown** — fecha o bloco no comentário, resto renderiza como código literal. **Do**: comentário CSS dentro de `<style>` scoped, ou apague.
+
+### Físico — viewport
+
+- **Slides com 5+ cards verticais** correm risco de cortar o último em viewports não-16:9. Padding vertical dos cards ≤0.55rem cada para 5 itens caberem com folga. Sempre teste em `?clicks=99`.
+
+### Idioma & verificação
+
 - **Idioma**: default PT-BR. Match o idioma do input quando diferente.
-- **Sempre verifique** com Chrome DevTools MCP antes de reportar concluído (Phase 4 §8).
+- **Verificação obrigatória** antes de reportar concluído: Phase 4.5a (`lint-deck.mjs`) + Phase 4.5b (`self-critique.mjs`) + sweep Chrome DevTools MCP (Phase 4 §8).
 
 ## Rationalization closure
 

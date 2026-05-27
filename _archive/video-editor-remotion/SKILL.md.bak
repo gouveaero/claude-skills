@@ -1,0 +1,150 @@
+---
+name: video-editor-remotion
+description: Use when the user wants to edit a video, montar um Reel/Short/TikTok, criar timeline editável em código, gerar legendas word-level kinetic-typography, aplicar cortes automáticos com transitions, ou produzir motion graphics com preview hot-reload no browser e render direto pra MP4. Ativa em frases como "edita com remotion", "monta o reel em código", "preview no browser", "render mp4", "vídeo programático", "legenda kinetic", "submagic clone". Generalista — funciona para qualquer cliente via `<ClientFolder>/.video-editor.json` (mesma config que a skill `video-editor-davinci`, com seção adicional `remotion`). Diferente da `video-editor-davinci` que gera projeto editável no Resolve, esta skill gera MP4 final via Remotion (React-based programmatic video) com preview live no `npx remotion studio`.
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+---
+
+# video-editor-remotion
+
+Pipeline AI-driven que transforma `clipes brutos + roteiro + brand config` numa composição Remotion editável e renderizada em MP4. Cada palavra animada por frame, transitions nativas entre cortes, hot-reload no browser.
+
+## Quando usar (vs. `video-editor-davinci`)
+
+| Quero... | Skill |
+|---|---|
+| MP4 final pra postar direto no Instagram, com captions kinetic estilo Submagic | **`video-editor-remotion`** ✓ |
+| Iterar conversacionalmente ("muda a cor das legendas pra rosa") com hot-reload | **`video-editor-remotion`** ✓ |
+| Versionar o vídeo no Git, A/B testar 3 hooks via batch render | **`video-editor-remotion`** ✓ |
+| Timeline editável manualmente no DaVinci Resolve, com Color Page e Fairlight | `video-editor-davinci` |
+| Color grade fino, frame-rate conform, conform multi-cam | `video-editor-davinci` |
+
+## Workflow
+
+```
+clipes brutos + roteiro
+    │
+    ├─► setup_project.py    : ffmpeg transcode HEVC→H.264 + scaffold Remotion
+    ├─► transcribe.py       : mlx-whisper → word-level JSON
+    ├─► plan_edit.py        : Claude API → edit_plan.json (cuts, captions, transitions, stats)
+    ├─► build_remotion.py   : gera Root.tsx + Reel.tsx + components/*
+    ├─► preview.py          : npx remotion studio + open browser
+    └─► render.py           : npx remotion render → out/<reel>.mp4
+```
+
+Orquestrador: `scripts/build_reel.py --input <clips_dir>` faz tudo.
+
+## Pré-requisitos
+
+- Node.js 18+
+- `ffmpeg` (`brew install ffmpeg`)
+- `mlx-whisper` no Python (Apple Silicon) ou fallback `@remotion/install-whisper-cpp` (cross-platform)
+- `<ClientFolder>/.video-editor.json` com seção `remotion` (ver `brand-configs/_example.json`)
+
+**plan_edit roda em dois modos:**
+- `--planner=api` (default quando `ANTHROPIC_API_KEY` está no env): chama o SDK Anthropic com prompt caching para gerar `edit_plan.json`
+- `--planner=agent` (default quando a key NÃO está): escreve `<output>_brief.md` com schema + transcripts + roteiro + brand config e sai com exit-code 2. Quando esta skill é invocada de dentro de uma sessão Claude Code, o agente que chamou lê o brief e escreve `edit_plan.json` direto via Read/Write — sem custo de API extra. Depois re-invoca `build_reel.py --skip-plan` para continuar.
+
+Validar tudo: `python3 scripts/check_setup.py`.
+
+## Pipeline (chamada manual)
+
+```bash
+# 1. Setup project (uma vez por reel)
+python3 ~/.claude/skills/video-editor-remotion/scripts/setup_project.py \
+    --input "/path/to/clips" --name "agiota_reel"
+
+# 2. Transcrever (cached por clip)
+python3 ~/.claude/skills/video-editor-remotion/scripts/transcribe.py \
+    --input "/path/to/clips"
+
+# 3. Planejar edit
+python3 ~/.claude/skills/video-editor-remotion/scripts/plan_edit.py \
+    --transcripts <output>/transcripts.json \
+    --brand-config <client>/.video-editor.json \
+    --output <output>/edit_plan.json --target-duration 30
+
+# 4. Gerar componentes Remotion
+python3 ~/.claude/skills/video-editor-remotion/scripts/build_remotion.py \
+    --plan <output>/edit_plan.json --remotion-dir <output>/remotion
+
+# 5. Preview no browser
+python3 ~/.claude/skills/video-editor-remotion/scripts/preview.py \
+    --remotion-dir <output>/remotion
+
+# 6. Render final MP4
+python3 ~/.claude/skills/video-editor-remotion/scripts/render.py \
+    --remotion-dir <output>/remotion --out <output>/final.mp4 --hq
+```
+
+Ou tudo de uma vez:
+```bash
+python3 ~/.claude/skills/video-editor-remotion/scripts/build_reel.py \
+    --input "/path/to/clips" --target-duration 30 --render
+```
+
+## Iterando (hot-reload conversational)
+
+Depois que `preview.py` lança o Studio:
+- Edita `<output>/remotion/src/edit_plan.json` → recompila live
+- Pede ao Claude pra editar `src/components/KineticCaption.tsx` ("deixa as palavras keyword em rosa") → Webpack recompila ~1-2s
+- Re-render só quando estiver satisfeito: `render.py`
+
+## Estrutura de outputs
+
+```
+<ClientFolder>/output/<reel-name>/
+├── clips_proxy/              # H.264 1080p transcoded (cache)
+├── transcripts.json
+├── edit_plan.json            # source of truth da edit (editável)
+├── remotion/
+│   ├── package.json          # node_modules ~200MB
+│   ├── remotion.config.ts
+│   ├── public/clips/         # symlink/copy dos proxies
+│   └── src/
+│       ├── Root.tsx          # gerado
+│       ├── Reel.tsx          # gerado
+│       └── components/       # gerado (KineticCaption, StatOverlay, VideoCut, LogoBug)
+└── final.mp4                 # após render
+```
+
+## Files
+
+- `scripts/check_setup.py` — valida pré-requisitos
+- `scripts/setup_project.py` — scaffold Remotion + transcode HEVC
+- `scripts/transcribe.py` — mlx-whisper word-level (cópia de `video-editor-davinci`)
+- `scripts/plan_edit.py` — Claude API → edit_plan.json (com transitions, css_filter, audio_sync_beats)
+- `scripts/build_remotion.py` — gera arquivos React a partir do plan
+- `scripts/preview.py` — launch Studio + open browser
+- `scripts/render.py` — single MP4
+- `scripts/batch_render.py` — variations CSV → multiple MP4s
+- `scripts/build_reel.py` — orquestrador
+- `templates/components/*.tsx` — componentes base (KineticCaption, StatOverlay, VideoCut, LogoBug, helpers.ts)
+- `templates/{Root,Reel,remotion.config}.tsx.tmpl` — templates parametrizáveis
+- `brand-configs/_example.json` — schema do `.video-editor.json` com seção `remotion`
+- `references/setup.md`, `component-library.md`, `edit-plan-schema.md`, `remotion-cookbook.md`
+
+## Compatibilidade com `video-editor-davinci`
+
+Esta skill **lê o mesmo arquivo `.video-editor.json`** da skill DaVinci, esperando seção adicional `remotion: {...}`. `transcribe.py` é literalmente copiado. `plan_edit.py` produz schema compatível ampliado. Cache `transcripts/` é compartilhado. Você pode rodar as duas skills no mesmo cliente sem conflito.
+
+## Renderizando overlays com canal alfa (para CapCut)
+
+Quando o reel principal é finalizado em **outro editor (CapCut, DaVinci)** e o Remotion serve apenas como gerador de motion graphics (stat charts, lower thirds, callouts), os overlays devem ser exportados com **fundo transparente**, não com fundo preto + chromakey. Chromakey deixa um halo perceptível em torno das letras (anti-aliasing do stroke escuro fica meio-transparente).
+
+**Regras pra rendering alpha-clean:**
+
+1. **Composição com fundo transparente** — o componente raiz não pode pintar background. Use `<AbsoluteFill>` sem `backgroundColor`, ou explicitamente `backgroundColor: "transparent"`. Se a composição é compartilhada com o reel principal, crie uma variante `*Graphics.tsx` que não pinta o fundo.
+
+2. **Sem stroke escuro nos textos** — `WebkitTextStroke` com cor próxima do fundo (#0A0A0A, #000) cria um halo visível em vídeo alpha. Se precisar de contorno, use a cor de destaque da marca (cobre, amarelo). Pra legibilidade sobre fundo de vídeo, prefira drop-shadow suave (0 0 20px com 0.6 alpha) em cima do mesmo tom da letra.
+
+3. **Drop-shadows com cor do elemento, não preto** — `filter: drop-shadow(0 0 14px <accentColor>aa)` funciona em alpha. `drop-shadow(0 0 14px black)` cria sombra que parece sujeira em movimento.
+
+4. **Render com `--alpha`** — `python3 scripts/render.py ... --alpha` aplica:
+   ```
+   --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png
+   ```
+   `--image-format=png` é obrigatório — sem ele Remotion escreve JPEG e o canal alpha some silenciosamente.
+
+5. **Saída: ProRes 4444 `.mov`** — pesado (~10-50 MB/s) mas é o único codec que CapCut e DaVinci importam com transparência confiável. WebM VP8/VP9 com alpha trava em 1080×1920 (encoder muito lento). HEVC alpha via VideoToolbox não aceita `ayuv`.
+
+6. **CapCut importa direto** — não precisa de blend mode. Mantém a track de gráficos acima da track principal e os clipes aparecem compostos naturalmente.

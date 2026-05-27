@@ -4,10 +4,10 @@ title: '{{TITLE}}'
 info: |
   {{INFO}}
 class: text-center
-transition: view-transition
-mdc: true
-highlighter: shiki
+transition: slide-left | slide-right
 clickAnimation: up
+comark: true
+highlighter: shiki
 drawings:
   persist: false
 fonts:
@@ -42,7 +42,7 @@ transition: fade
 
 ---
 layout: fact
-transition: slide-up
+transition: zoom
 title: Por que isso importa
 ---
 
@@ -58,7 +58,8 @@ title: Antes e depois — refactoring story
 
 # Refactoring story
 
-```ts magic-move
+````md magic-move
+```ts
 // V1 — imperative loop
 function process(data) {
   const result = []
@@ -80,6 +81,7 @@ function process(data) {
 // V3 — curried + nome melhor
 const transformAll = data => data.map(transform)
 ```
+````
 
 ---
 title: Arquitetura do pipeline
@@ -112,29 +114,33 @@ title: KPIs
 ]" />
 
 ---
+layout: two-cols
 title: Comparação antes/depois
 ---
 
-# Antes vs. depois
+# Stack antigo
 
-<ComparisonSplit beforeTitle="Stack antigo" afterTitle="Stack atual">
-<template #before>
+<v-clicks>
 
 - Deploy manual via SSH
 - Build no servidor (20min)
 - Sem rollback
 - 1 ambiente: prod
 
-</template>
-<template #after>
+</v-clicks>
+
+::right::
+
+# Stack atual
+
+<v-clicks>
 
 - GitHub Actions
 - Build paralelizado (2min)
 - Rollback via git revert
 - 3 ambientes: dev/staging/prod
 
-</template>
-</ComparisonSplit>
+</v-clicks>
 
 ---
 title: Pergunta pra audiência
@@ -177,15 +183,18 @@ title: Roadmap
 # Próximos passos
 
 <Timeline orientation="horizontal" :items="[
-  { date: 'Mai', title: 'MVP em prod', body: 'pipeline básico ativo', icon: '<mdi-flag />' },
-  { date: 'Jun', title: 'Observability', body: 'Grafana + Sentry', icon: '<mdi-chart-line />' },
-  { date: 'Jul', title: 'Multi-region', body: 'failover ativo-ativo', icon: '<mdi-earth />' },
-  { date: 'Ago', title: 'Auto-scaling', body: 'baseado em load', icon: '<mdi-arrow-expand-all />' }
+  { date: 'Mai', title: 'MVP em prod', body: 'pipeline básico ativo' },
+  { date: 'Jun', title: 'Observability', body: 'Grafana + Sentry' },
+  { date: 'Jul', title: 'Multi-region', body: 'failover ativo-ativo' },
+  { date: 'Ago', title: 'Auto-scaling', body: 'baseado em load' }
 ]" />
+
+> [!NOTE]
+> Roadmap sujeito a ajuste conforme prioridades do trimestre.
 
 ---
 layout: statement
-transition: scale-fade
+transition: zoom
 ---
 
 # Construir o futuro <br> exige refazer o presente.

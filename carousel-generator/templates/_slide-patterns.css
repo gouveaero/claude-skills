@@ -1,0 +1,188 @@
+/* ——— Carousel Generator — Shared Slide Patterns ———
+   All templates link this file. Variables set by the brand config injection block.
+   Never edit variables here — they come from :root in the HTML.
+*/
+
+/* ——— Slide base ——— */
+.slide {
+  width: var(--slide-w, 1080px);
+  height: var(--slide-h, 1350px);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 80px 72px;
+  box-sizing: border-box;
+  background: var(--c-bg, #F6F1E8);
+  color: var(--c-fg, #121210);
+  font-family: var(--f-body, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+.slide.deep   { background: var(--c-bg-deep, #14251D); color: var(--c-fg-deep, #E7DEC9); }
+.slide.alt    { background: var(--c-bg-alt, #EFE7D8); }
+.slide.accent { background: var(--c-accent, #8F3A2E); color: #fff; }
+
+/* ——— Chrome (header + footer per slide) ——— */
+.slide-chrome {
+  position: absolute;
+  inset: 40px 48px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  pointer-events: none; z-index: 5;
+}
+.slide-chrome .head,
+.slide-chrome .foot {
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--f-mono, monospace);
+  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--c-fg-muted, #55544E);
+}
+.slide.deep .slide-chrome .head,
+.slide.deep .slide-chrome .foot { color: var(--c-accent-dim, #C07D6E); opacity: 0.85; }
+.slide-pageno {
+  font-family: var(--f-display, serif);
+  font-style: italic; font-size: 17px;
+  color: var(--c-accent, #8F3A2E);
+  letter-spacing: 0; text-transform: none;
+}
+.slide.deep .slide-pageno { color: var(--c-accent-dim, #C07D6E); }
+
+/* ——— Typography ——— */
+.s-eyebrow {
+  font-family: var(--f-mono, monospace);
+  font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--c-fg-muted, #55544E);
+  display: inline-flex; align-items: center; gap: 12px;
+}
+.s-eyebrow::before { content: ""; width: 22px; height: 1px; background: currentColor; }
+.slide.deep .s-eyebrow { color: var(--c-accent-dim, #C07D6E); }
+
+.s-h1 {
+  font-family: var(--f-display, serif);
+  font-weight: 500; font-size: 120px; line-height: 0.97;
+  letter-spacing: -0.025em; margin: 0;
+}
+.s-h2 {
+  font-family: var(--f-display, serif);
+  font-weight: 500; font-size: 80px; line-height: 1.02;
+  letter-spacing: -0.018em; margin: 0;
+}
+.s-h3 {
+  font-family: var(--f-display, serif);
+  font-weight: 500; font-size: 52px; line-height: 1.08;
+  letter-spacing: -0.012em; margin: 0;
+}
+.s-h1 em, .s-h2 em, .s-h3 em {
+  font-style: italic; font-weight: 400;
+  color: var(--c-accent, #8F3A2E);
+}
+.slide.deep .s-h1 em,
+.slide.deep .s-h2 em,
+.slide.deep .s-h3 em { color: var(--c-accent-dim, #C07D6E); }
+
+.s-body {
+  font-family: var(--f-body, system-ui, sans-serif);
+  font-size: 24px; line-height: 1.55; margin: 0;
+  color: var(--c-fg, #121210);
+  max-width: 58ch;
+}
+.slide.deep .s-body { color: var(--c-fg-deep, #E7DEC9); opacity: 0.85; }
+
+.s-mono {
+  font-family: var(--f-mono, monospace);
+  font-size: 13px; letter-spacing: 0.1em;
+  color: var(--c-fg-muted, #55544E);
+}
+.slide.deep .s-mono { color: var(--c-accent-dim, #C07D6E); opacity: 0.75; }
+
+/* ——— Numeral (roman numerals, chapter numbers) ——— */
+.s-numeral {
+  font-family: var(--f-display, serif);
+  font-style: italic;
+  color: var(--c-accent, #8F3A2E);
+  font-size: 200px; line-height: 0.9;
+}
+.slide.deep .s-numeral { color: var(--c-accent-dim, #C07D6E); }
+
+/* ——— Rules ——— */
+.s-rule { border: none; border-top: 1px solid rgba(18,18,16,0.14); }
+.slide.deep .s-rule { border-color: rgba(231,222,201,0.16); }
+
+/* ——— Stack helpers ——— */
+.s-stack-lg > * + * { margin-top: 48px; }
+.s-stack-md > * + * { margin-top: 28px; }
+.s-stack-sm > * + * { margin-top: 14px; }
+
+/* ——— Grid helpers ——— */
+.s-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+.s-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; }
+.s-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+
+/* ——— Pattern: hook (fill layout) ——— */
+.pat-hook { justify-content: center; gap: 40px; }
+.pat-hook .hook-mark { color: var(--c-accent-dim, #C07D6E); width: 80px; height: 80px; }
+.pat-hook .hook-mark svg { width: 100%; height: 100%; }
+
+/* ——— Pattern: voice-pair ——— */
+.s-voice-col { border-top: 1px solid rgba(18,18,16,0.14); padding-top: 24px; }
+.slide.deep .s-voice-col { border-color: rgba(231,222,201,0.16); }
+.s-voice-col h4 {
+  font-family: var(--f-mono, monospace);
+  font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase;
+  margin: 0 0 20px; color: var(--c-fg-muted, #55544E);
+}
+.s-voice-col .yes {
+  color: var(--c-fg, #121210);
+  font-family: var(--f-display, serif);
+  font-size: 30px; line-height: 1.2; font-weight: 500; font-style: italic;
+}
+.s-voice-col .no {
+  color: var(--c-fg-muted, #55544E);
+  font-family: var(--f-display, serif);
+  font-size: 30px; line-height: 1.2;
+  text-decoration: line-through;
+  text-decoration-color: var(--c-accent, #8F3A2E);
+  text-decoration-thickness: 2px;
+}
+
+/* ——— Pattern: examples-grid card ——— */
+.s-card {
+  border: 1px solid rgba(18,18,16,0.14);
+  padding: 28px 24px;
+  background: var(--c-bg, #F6F1E8);
+}
+.slide.deep .s-card { border-color: rgba(231,222,201,0.16); background: transparent; }
+.s-card-num {
+  font-family: var(--f-display, serif);
+  font-style: italic; font-size: 28px;
+  color: var(--c-accent, #8F3A2E); margin-bottom: 12px;
+}
+.s-card-label {
+  font-family: var(--f-mono, monospace);
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--c-fg-muted, #55544E); margin-bottom: 8px;
+}
+.s-card-text {
+  font-family: var(--f-body, system-ui, sans-serif);
+  font-size: 22px; line-height: 1.45;
+}
+
+/* ——— CTA highlight box ——— */
+.s-cta-word {
+  font-family: var(--f-display, serif);
+  font-style: italic; font-size: 72px;
+  color: var(--c-accent, #8F3A2E);
+  letter-spacing: -0.02em;
+}
+.slide.deep .s-cta-word { color: var(--c-accent-dim, #C07D6E); }
+
+/* ——— Footer bar ——— */
+.s-footer-bar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 18px 72px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid rgba(18,18,16,0.12);
+  font-family: var(--f-mono, monospace); font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--c-fg-muted, #55544E);
+}
+.slide.deep .s-footer-bar { border-color: rgba(231,222,201,0.12); color: var(--c-accent-dim, #C07D6E); opacity: 0.75; }

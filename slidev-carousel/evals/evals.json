@@ -1,0 +1,20 @@
+{
+  "skill_name": "slidev-carousel",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "monta um carrossel pro Instagram explicando 5 erros de quem está aprendendo Claude Code — quero que pareça polished, com hook forte e CTA pra salvar",
+      "expected_output": "7-9 slides, AIDA structure, hook agressivo no slide 1, 3-4 erros como StepCards, pattern interrupter no meio, CTA com @gouveaero, PNGs 1080×1350"
+    },
+    {
+      "id": 2,
+      "prompt": "preciso de um carrossel sobre 'como decidir entre Sonnet e Opus' — formato quadrado, com diagrama mermaid de decision tree no meio",
+      "expected_output": "6-8 slides square 1080x1080, includes mermaid decision-tree, <12 palavras/slide"
+    },
+    {
+      "id": 3,
+      "prompt": "carrossel formato story (9:16) pra anunciar curso novo da Exos, 5 slides, CTA forte pra DM",
+      "expected_output": "5 slides 1080×1920, story aspect ratio, hook→stakes→CTA flow, CTA DM-driven"
+    }
+  ]
+}

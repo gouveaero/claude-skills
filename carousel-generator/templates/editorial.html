@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title><!-- TITLE --></title>
+<!-- BRAND_FONT_IMPORTS -->
+<!-- BRAND_STYLESHEET_IMPORTS -->
+<link rel="stylesheet" href="../templates/_slide-patterns.css" />
+<!-- BRAND_INJECT_START -->
+<style>
+/* Brand config injected by carousel-generator Phase 4 */
+:root {
+  --c-bg:       #F6F1E8;
+  --c-bg-alt:   #EFE7D8;
+  --c-bg-deep:  #14251D;
+  --c-fg:       #121210;
+  --c-fg-muted: #55544E;
+  --c-fg-deep:  #E7DEC9;
+  --c-accent:   #8F3A2E;
+  --c-accent-dim:#C07D6E;
+  --f-display:  "Cormorant Garamond", Garamond, "Times New Roman", serif;
+  --f-body:     "Inter Tight", Inter, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --f-mono:     "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --slide-w:    1080px;
+  --slide-h:    1350px;
+}
+</style>
+<!-- BRAND_INJECT_END -->
+<!-- BRAND_SCRIPT_IMPORTS -->
+<style>
+/* ——— Viewer (used when deck-stage.js is NOT imported) ——— */
+html, body { margin:0; padding:0; background:#111; overflow:hidden; }
+.carousel-viewer {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.slide-wrapper {
+  position: relative;
+  transform-origin: top left;
+}
+.slide { display: none; }
+.slide.active { display: flex; }
+
+/* Print: one page per slide */
+@media print {
+  html, body { background: white; overflow: visible; }
+  .carousel-viewer { position: static; display: block; }
+  .slide-wrapper { transform: none !important; }
+  .slide { display: flex !important; page-break-after: always; }
+  .slide-ui { display: none !important; }
+}
+
+/* ——— Slide UI nav ——— */
+.slide-ui {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 16px;
+  background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 40px;
+  font-family: ui-monospace, monospace; font-size: 13px; color: #ccc;
+  opacity: 1; transition: opacity 1.5s ease;
+  z-index: 99;
+}
+.slide-ui.hidden { opacity: 0; pointer-events: none; }
+.slide-ui button {
+  background: none; border: 1px solid #555; color: #ccc;
+  padding: 4px 12px; border-radius: 4px; cursor: pointer; font: inherit;
+}
+.slide-ui button:hover { border-color: #aaa; color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- ———————————————————————————————————————
+  LOGO SYMBOL (optional — brand-specific SVG mark reused via <use>)
+  Phase 4: if brand config has logo.kind == "svg-inline", paste SVG <defs> here.
+———————————————————————————————————————— -->
+<!-- LOGO_SYMBOL_PLACEHOLDER -->
+
+<div class="carousel-viewer">
+  <div class="slide-wrapper" id="slideWrapper">
+
+    <!-- ═══════════════════════════════════════════
+         SLIDES — Phase 4 writes one <section> per approved outline row.
+         Each section uses class="slide [deep|alt|accent]".
+         See references/slide-patterns.md for pattern snippets.
+    ═══════════════════════════════════════════ -->
+
+    <!-- SLIDE 1 — hook-deep example (replace with actual content) -->
+    <section class="slide deep active">
+      <div class="slide-chrome">
+        <div class="head"><span><!-- BRAND_HANDLE --></span><span><!-- DATE/SERIES --></span></div>
+        <div class="foot"><span><!-- SERIES_LABEL --></span><span class="slide-pageno">i</span></div>
+      </div>
+      <div class="pat-hook s-stack-md" style="margin-top:auto;margin-bottom:auto;">
+        <div class="s-eyebrow"><!-- EYEBROW --></div>
+        <h1 class="s-h1"><!-- HOOK_TITLE_LINE_1 --><em><!-- HOOK_ITALIC --></em></h1>
+        <p class="s-body" style="opacity:.8;"><!-- HOOK_SUBTITLE --></p>
+      </div>
+    </section>
+
+    <!-- SLIDE 2 — qualification example -->
+    <section class="slide alt">
+      <div class="slide-chrome">
+        <div class="head"><span><!-- BRAND_HANDLE --></span><span>ii</span></div>
+        <div class="foot"><span><!-- SERIES_LABEL --></span><span class="slide-pageno">ii</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;justify-content:center;height:100%;gap:32px;">
+        <div class="s-eyebrow">Para quem</div>
+        <h2 class="s-h3"><!-- QUALIFICATION_TITLE --></h2>
+        <p class="s-body"><!-- QUALIFICATION_BODY --></p>
+      </div>
+    </section>
+
+    <!-- ADD MORE SLIDES HERE — Phase 4 replaces this block -->
+
+  </div><!-- /slide-wrapper -->
+</div>
+
+<div class="slide-ui" id="slideUi">
+  <button id="prevBtn">←</button>
+  <span id="slideCounter">1 / 1</span>
+  <button id="nextBtn">→</button>
+</div>
+
+<!-- BRAND_SCRIPT_IMPORTS_INLINE -->
+<script>
+// Minimal viewer — deck-stage.js overrides this if imported.
+(function() {
+  if (customElements.get('deck-stage')) return; // deck-stage loaded; skip
+  const wrapper = document.getElementById('slideWrapper');
+  const ui = document.getElementById('slideUi');
+  const counter = document.getElementById('slideCounter');
+  const slides = Array.from(wrapper.querySelectorAll('.slide'));
+  let idx = 0;
+  let hideTimer;
+
+  function scale() {
+    const w = window.innerWidth, h = window.innerHeight;
+    const sw = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--slide-w')) || 1080;
+    const sh = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--slide-h')) || 1350;
+    const s = Math.min(w / sw, h / sh);
+    wrapper.style.transform = `scale(${s})`;
+    wrapper.style.width = sw + 'px';
+    wrapper.style.height = sh + 'px';
+    wrapper.parentElement.style.width = w + 'px';
+    wrapper.parentElement.style.height = h + 'px';
+    wrapper.style.marginLeft = ((w - sw * s) / 2) + 'px';
+    wrapper.style.marginTop = ((h - sh * s) / 2) + 'px';
+  }
+
+  function show(n) {
+    slides.forEach((s,i) => s.classList.toggle('active', i === n));
+    counter.textContent = (n + 1) + ' / ' + slides.length;
+    showUi();
+  }
+
+  function showUi() {
+    ui.classList.remove('hidden');
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => ui.classList.add('hidden'), 2200);
+  }
+
+  function next() { if (idx < slides.length - 1) { idx++; show(idx); } }
+  function prev() { if (idx > 0) { idx--; show(idx); } }
+
+  document.getElementById('nextBtn').addEventListener('click', next);
+  document.getElementById('prevBtn').addEventListener('click', prev);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') next();
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') prev();
+  });
+  wrapper.addEventListener('click', next);
+  window.addEventListener('resize', scale);
+  scale();
+  show(0);
+})();
+</script>
+</body>
+</html>

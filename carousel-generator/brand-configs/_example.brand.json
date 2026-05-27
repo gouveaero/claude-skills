@@ -1,0 +1,45 @@
+{
+  "_comment": "Example brand config. Copy + rename to <your-slug>.brand.json",
+  "name":       "Example Brand",
+  "slug":       "example",
+  "voice_tone": "friendly, conversational, professional; English; no jargon",
+  "vocabulary_use":   ["build", "launch", "ship", "grow"],
+  "vocabulary_avoid": ["synergy", "disruptive", "leverage", "ecosystem"],
+  "compliance_notes": "",
+
+  "colors": {
+    "bg":         "#FFFFFF",
+    "bg_alt":     "#F5F5F5",
+    "bg_deep":    "#111111",
+    "fg":         "#111111",
+    "fg_muted":   "#666666",
+    "fg_on_deep": "#EEEEEE",
+    "accent":     "#2563EB",
+    "accent_alt": "#93C5FD"
+  },
+
+  "fonts": {
+    "display": "Inter, system-ui, sans-serif",
+    "body":    "Inter, system-ui, sans-serif",
+    "mono":    "JetBrains Mono, ui-monospace, monospace"
+  },
+
+  "google_fonts_url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
+
+  "aspect_ratio": "1080x1350",
+
+  "logo": {
+    "kind": "img",
+    "src":  ""
+  },
+
+  "footer": {
+    "handle":  "@yourbrand",
+    "website": "yourbrand.com"
+  },
+
+  "extras": {
+    "stylesheet_imports": [],
+    "script_imports":     []
+  }
+}

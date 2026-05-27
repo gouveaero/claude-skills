@@ -1,0 +1,8 @@
+credentials.local.json
+magnific_state.json
+.playwright-profile/
+.session_state.json
+state.json
+__pycache__/
+*.pyc
+.block_screenshots/

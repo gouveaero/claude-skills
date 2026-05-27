@@ -175,4 +175,13 @@ Para evitar perda, **mantenha o repo `slides-hub` no GitHub** — ele é a fonte
 
 A página em `/` lista todos os decks publicados em design alinhado com `gabrielgouvea.com.br`. O `setup-hub.sh` cria um placeholder; para o design definitivo "impeccable", roda `/impeccable` na hora do setup ou depois.
 
-Atualização do index: a cada deploy de um novo deck, o `deploy-to-hub.sh` regenera `slides-hub/index.html` automaticamente listando todos os subdirs de `decks/`.
+**Atualização do index**: cada `deploy-to-hub.sh` chama `regen-hub-index.mjs` (step 2.5) automaticamente — esse script lê todas as subpastas de `decks/`, extrai o `<title>` de cada `index.html` de deck, e regenera o bloco `<ul id="decks">...</ul>` no root `index.html`. Ordenação: mtime descendente (decks recentes no topo).
+
+Pra rodar manualmente (ex: depois de deletar um deck, ou se algo dessincronizou):
+
+```bash
+node ~/.claude/skills/slidev-presentation/scripts/regen-hub-index.mjs ~/.slides-hub
+cd ~/.slides-hub && git add index.html && git commit -m "chore: refresh hub index" && git push
+```
+
+O design custom do `index.html` (CSS embutido, cores, layout) é preservado — o script só substitui o conteúdo do `<ul id="decks">`.

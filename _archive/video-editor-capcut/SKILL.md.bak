@@ -1,0 +1,149 @@
+---
+name: video-editor-capcut
+description: Use when the user wants to edit a video and finalize in CapCut Desktop. Pipeline AI-driven: transcribe raw clips → plan edit → generate CapCut draft project (draft_content.json) that opens directly in CapCut Desktop with timeline, cuts, and subtitles ready. User finalizes in CapCut (music, effects, color, render). Activate on: "edita no capcut", "exporta pro capcut", "draft capcut", "manda pro capcut", "abre no capcut", "faz o draft", "pré-edita capcut", "finalizar no capcut", "reel no capcut", "monta pro capcut".
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+---
+
+# video-editor-capcut
+
+Pipeline que transforma `clipes brutos + roteiro + brand config` em um projeto CapCut Desktop pronto: clipes cortados na timeline, legendas word-level, transições — tudo salvo como `draft_content.json` na pasta de projetos do CapCut.
+
+## Quando usar (vs. outras skills)
+
+| Quero... | Skill |
+|---|---|
+| Projeto pronto no CapCut pra finalizar (música, efeitos, render) | **`video-editor-capcut`** ✓ |
+| MP4 final pra postar direto, sem abrir nenhum editor | `video-editor-remotion` |
+| Timeline editável no DaVinci com Color Page completo | `video-editor-davinci` |
+
+## Pré-requisitos
+
+```bash
+pip3 install pyJianYingDraft     # builder do draft
+brew install ffmpeg              # transcode + análise
+# mlx-whisper (Apple Silicon) ou whisper.cpp (Intel)
+pip3 install mlx-whisper         # Apple Silicon
+```
+
+CapCut Desktop 8.x instalado em `/Applications/CapCut.app`.
+
+## Fluxo
+
+```
+clipes brutos + roteiro
+    │
+    ├─► setup_project.py    : ffmpeg transcode HEVC→H.264 + scaffold output dir
+    ├─► transcribe.py       : mlx-whisper → word-level JSON (cache por clip)
+    ├─► plan_edit.py        : Claude API → edit_plan.json (cortes, legendas, transições)
+    └─► capcut_draft_builder.py : edit_plan.json → draft_content.json no CapCut
+                                  ↓
+              ~/Library/Containers/com.lemon.lvoverseas/Data/Library/
+              Application Support/CapCut/User Data/Projects/com.lveditor.draft/<name>/
+```
+
+## Comando único (pipeline completo)
+
+```bash
+python3 ~/.claude/skills/video-editor-capcut/scripts/build_reel.py \
+  --input "/path/to/clips" \
+  --name "reel_tribotax_01" \
+  --brand-config "/path/to/.video-editor.json" \
+  --target-duration 30 \
+  --open
+```
+
+`--open` abre o CapCut automaticamente após gerar o draft.
+
+## Comandos individuais
+
+```bash
+# 1. Transcode
+python3 ~/.claude/skills/video-editor-capcut/scripts/setup_project.py \
+  --input "/path/to/clips" --output "/path/to/output" --name "reel_01"
+
+# 2. Transcrever
+python3 ~/.claude/skills/video-editor-capcut/scripts/transcribe.py \
+  --input "/path/to/output/clips_proxy" \
+  --output "/path/to/output/transcripts.json" \
+  --brand-config ".video-editor.json"
+
+# 3. Planejar (gera edit_plan.json)
+python3 ~/.claude/skills/video-editor-capcut/scripts/plan_edit.py \
+  --transcripts "/path/to/output/transcripts.json" \
+  --brand-config ".video-editor.json" \
+  --output "/path/to/output/edit_plan.json" \
+  --target-duration 30
+
+# 4. Gerar draft CapCut
+python3 ~/.claude/skills/video-editor-capcut/scripts/capcut_draft_builder.py \
+  --plan "/path/to/output/edit_plan.json" \
+  --clips-dir "/path/to/output/clips_proxy" \
+  --draft-name "reel_tribotax_01" \
+  --open
+```
+
+## Estrutura de outputs
+
+```
+<input_dir_parent>/<reel-name>/
+├── clips_proxy/         # H.264 1080p transcoded
+├── transcripts.json     # word-level (cached)
+├── edit_plan.json       # source of truth da edit
+└── [draft em CapCut]    # ~/Library/Containers/.../com.lveditor.draft/<reel-name>/
+```
+
+## O que fica pronto no CapCut
+
+- Clipes cortados na timeline principal (track `video`)
+- Legendas word-level na track de texto (posição bottom-third)
+- Transições básicas: fade/叠化, slide_up, wipe (map em `references/capcut-draft-schema.md`)
+- Overlays de texto (stats/dados grandes)
+
+## O que o usuário faz no CapCut
+
+- Música/trilha (limitação de licença)
+- Efeitos especiais (stickers, AI effects, templates CapCut)
+- Color grade fino
+- Ajustes de timing/posição
+- Render final e export
+
+## Config por cliente (.video-editor.json)
+
+Mesmo arquivo compartilhado com `video-editor-remotion` e `video-editor-davinci`.
+Seção `capcut` customiza legendas e transições:
+
+```json
+{
+  "brand": { ... },
+  "defaults": { "fps": 30, "resolution": "1080x1920", ... },
+  "voice": { "language": "pt-BR", "whisper_model": "mlx-community/whisper-large-v3-mlx" },
+  "capcut": {
+    "transition_default": "fade",
+    "transition_duration_frames": 6,
+    "caption_size": 8.0,
+    "caption_bold": true,
+    "caption_color": "#FFFFFF",
+    "caption_position_y": -0.8,
+    "overlay_size": 14.0
+  }
+}
+```
+
+Ver template em `brand-configs/_example.json`.
+
+## Limitações conhecidas
+
+1. **Criptografia CapCut 6+**: a criptografia bloqueia LEITURA de templates existentes, mas NÃO impede geração de novos drafts. CapCut 8.5 lê drafts gerados normalmente.
+2. **Música**: CapCut não permite importar áudio de terceiros via draft JSON por razões de licença — adicionar manualmente.
+3. **Color grade**: `css_filter` do edit_plan não tem equivalente direto — nota apenas informativa.
+4. **Efeitos especiais**: stickers e templates CapCut requerem resource_id internos — não gerados automaticamente.
+
+## Arquivos
+
+- `scripts/build_reel.py` — orquestrador
+- `scripts/capcut_draft_builder.py` — core: edit_plan.json → draft CapCut
+- `scripts/setup_project.py` — transcode + scaffold (igual Remotion/DaVinci)
+- `scripts/transcribe.py` — mlx-whisper word-level (igual Remotion/DaVinci)
+- `scripts/plan_edit.py` — Claude API → edit_plan.json (igual Remotion)
+- `references/capcut-draft-schema.md` — schema técnico completo
+- `brand-configs/_example.json` — template de config com seção `capcut`

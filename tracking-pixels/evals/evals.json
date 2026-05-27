@@ -1,0 +1,26 @@
+{
+  "skill_name": "tracking-pixels",
+  "evals": [
+    {
+      "id": 1,
+      "name": "install-nextjs-fresh",
+      "prompt": "Acabei de criar um site novo do Elen Tolentino em Next.js 16 App Router em Exos/Elen_Tolentino/website/. Quero instalar tracking nativo dele: Meta Pixel + CAPI (pixel 244050753785975), GA4 (measurement id G-AB12CD34EF), e Google Ads (conversion id AW-1122334455 com label de Lead 'xyz/abc'). Os eventos que preciso firar são: PageView automático em toda rota, Lead no form do hero (selector #hero-form), e Schedule no botão de agendar consulta (selector [data-cta='schedule']). Sem TikTok por enquanto. Sem consent banner — o público é profissional, baixo risco LGPD.",
+      "expected_output": "Skill should: (1) detect stack as nextjs-app-router; (2) generate .tracking.json with meta/ga4/google_ads enabled and tiktok disabled; (3) copy lib/track.ts, lib/hash.ts, lib/cookies.ts, app/api/track/route.ts, components/PixelBootstrap.tsx into the site; (4) generate .env.example with the right env vars for the 3 enabled platforms; (5) show diff + post-install-checklist; (6) NOT commit until user approves; (7) remind user about Coolify env-var step.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "audit-leticia-gtm",
+      "prompt": "Roda um audit do tracking que existe hoje no site da Letícia Lang (Exos/Leticia_Lang/site/). Quero saber o que tá rodando antes de mexer em qualquer coisa.",
+      "expected_output": "Skill should run scripts/audit_existing_tags.py against the site and report: (1) GTM container GTM-T9NN3458 found in src/main.tsx and/or index.html; (2) no Meta Pixel direct (fbq), no GA4, no Google Ads, no TikTok direct; (3) universal track() layer NOT installed; (4) form selectors detected (hero form, lots form); (5) verdict: 'GTM-only setup — recommended mode: gtm-migration'. Should NOT install anything in audit mode.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "add-tiktok-to-existing",
+      "prompt": "O Dr. Kleber já tem tracking nativo instalado (Meta + GA4). Agora ele decidiu rodar campanhas TikTok também. Preciso adicionar TikTok Pixel + Events API ao site dele. Pixel ID: 7234567890123456789. Já tenho o access token.",
+      "expected_output": "Skill should run in add-platform mode: (1) read existing .tracking.json, flip platforms.tiktok.enabled to true, set pixel_id; (2) append VITE_TIKTOK_PIXEL_ID or NEXT_PUBLIC_TIKTOK_PIXEL_ID + TIKTOK_ACCESS_TOKEN to .env.example; (3) add TikTok Pixel <Script> block to existing PixelBootstrap.tsx (NOT replace — append); (4) verify fan-out endpoint already has sendToTiktok (it does — was just gated by env var presence); (5) ask user to add access_token to .env.local and Coolify, then test with TIKTOK_TEST_EVENT_CODE.",
+      "files": []
+    }
+  ]
+}
