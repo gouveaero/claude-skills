@@ -194,7 +194,7 @@ export async function track(name: EventName, params: EventParams = {}): Promise<
       ? await getGa4ClientId(process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID)
       : undefined;
 
-  const endpoint = process.env.NEXT_PUBLIC_TRACKING_ENDPOINT ?? '/api/track';
+  const endpoint = process.env.NEXT_PUBLIC_TRACKING_ENDPOINT || '/api/track/';
 
   try {
     await fetch(endpoint, {
