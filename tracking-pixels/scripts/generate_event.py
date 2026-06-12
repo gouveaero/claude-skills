@@ -5,9 +5,14 @@ Usage:
     python generate_event.py \\
         --site /path/to/site \\
         --tracking-json /path/to/.tracking.json \\
-        --name Purchase \\
+        --name InitiateCheckout \\
         --fire-on click \\
         --selector "[data-cta='checkout']"
+
+Sales events (Purchase, AddPaymentInfo) are opt-in only: they normally fire on the
+checkout platform (Hotmart/Eduzz/Kiwify), not the site. Adding them requires the
+explicit --allow-sales-event flag, after the user confirms the site itself
+processes the sale.
 
 What it does:
     1. Validates the event name against the known EventName union.
@@ -36,6 +41,9 @@ KNOWN_EVENTS = {
 
 FIRE_ON_VALUES = {"every_route", "form_submit", "click", "load", "manual"}
 
+# Fire on the checkout platform, not the site — see SKILL.md scope rule.
+SALES_EVENTS = {"Purchase", "AddPaymentInfo"}
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -44,7 +52,24 @@ def main() -> int:
     parser.add_argument("--name", required=True, help="EventName, e.g. Purchase")
     parser.add_argument("--fire-on", required=True, choices=sorted(FIRE_ON_VALUES))
     parser.add_argument("--selector", default=None, help="CSS selector when fire_on is form_submit or click")
+    parser.add_argument(
+        "--allow-sales-event",
+        action="store_true",
+        help="Required to add Purchase/AddPaymentInfo — only after the user explicitly "
+        "confirms the site itself processes the sale.",
+    )
     args = parser.parse_args()
+
+    if args.name in SALES_EVENTS and not args.allow_sales_event:
+        print(
+            f"⚠️  '{args.name}' is a sales/checkout event. On Exos client sites, purchase events\n"
+            "normally fire on the checkout platform (Hotmart/Eduzz/Kiwify), NOT on the site.\n"
+            "Firing it here too inflates ROAS and breaks dedup (checkout-side events carry\n"
+            "different event_ids). Re-run with --allow-sales-event ONLY after the user\n"
+            "explicitly confirms the site itself processes the sale.",
+            file=sys.stderr,
+        )
+        return 2
 
     if args.name not in KNOWN_EVENTS:
         print(
@@ -104,8 +129,9 @@ def main() -> int:
     CTA
   </button>""")
     elif args.fire_on == "every_route":
-        print(f"""  // {args.name} on every route change — already fires via PixelBootstrap if name is PageView.
-  // For other route-level events, add a useEffect in your root layout that calls
+        print(f"""  // {args.name} on every route change — PixelBootstrap fires PageView on hard load
+  // AND on client-side route changes (it listens for pathname changes). For other
+  // route-level events, add a useEffect in your root layout that calls
   //   track('{args.name}', ...)
   // on every pathname change.""")
     elif args.fire_on == "load":

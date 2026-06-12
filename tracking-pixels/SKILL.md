@@ -1,6 +1,6 @@
 ---
 name: tracking-pixels
-description: Use when the user wants to install ad pixels and Conversions APIs natively (without GTM) on a website or web app — Meta Pixel + CAPI, Google Ads + Enhanced Conversions, GA4 + Measurement Protocol, TikTok Pixel + Events API. Triggers on phrases like "instalar pixel da Meta", "ativar CAPI no site", "Enhanced Conversions Google Ads", "tracking nativo sem GTM", "configurar pixel TikTok", "Conversions API", "Measurement Protocol GA4", "rastreamento de leads no site", "dedup pixel servidor", "migrar de GTM pra código nativo", "auditoria de tags no site", "install tracking on this site", "set up pixel and CAPI", or whenever a new client website needs tracking infrastructure. Generates a universal track() layer + server-side fan-out endpoint + cookie capture + PII hashing for Next.js App Router or Vite+React SPA. Reads per-client config from `<ClientFolder>/.tracking.json`. Always confirms with the user before commit; LGPD/GDPR consent gates are opt-in (off by default).
+description: Use when the user wants to install ad pixels and Conversions APIs natively (without GTM) — Meta Pixel + CAPI, Google Ads + Enhanced Conversions, GA4 + Measurement Protocol, TikTok Pixel + Events API — or to review tracking coverage of a new/modified page. Triggers: "instalar pixel da Meta", "ativar CAPI no site", "Enhanced Conversions Google Ads", "tracking nativo sem GTM", "configurar pixel TikTok", "Conversions API", "Measurement Protocol GA4", "rastreamento de leads no site", "dedup pixel servidor", "migrar de GTM pra código nativo", "auditoria de tags no site", "install tracking on this site", "revisar tracking da página", "review page tracking", "essa página nova tá trackeada?", whenever a new client website needs tracking infrastructure, or right after a new page is created on an Exos client site. Stacks: Next.js App Router and Vite+React SPA. Reads per-client config from `<ClientFolder>/.tracking.json`. Sales events (Purchase/AddPaymentInfo) are opt-in — they fire on checkout platforms, not the site.
 ---
 
 # tracking-pixels
@@ -25,11 +25,12 @@ Everything is wired so the same `track('Lead', {...})` call on the client fires 
 **Does:**
 - Generates `lib/track.ts` (universal event layer), `lib/hash.ts` (SHA-256 + normalization), `lib/cookies.ts` (capture `_fbp`/`_fbc`/`_ttp`/`_ttclid`/`_ga`/`_gcl_aw`), `components/PixelBootstrap.tsx`, and the server-side fan-out endpoint.
 - Reads per-client config from `<ClientFolder>/.tracking.json` and per-client secrets from `.env.local` / Coolify env vars.
-- Operates in **6 modes**: install, add-event, add-platform, audit, gtm-migration, enable-lgpd. See [Mode router](#mode-router).
+- Operates in **7 modes**: install, add-event, add-platform, audit, gtm-migration, enable-lgpd, review-page. See [Mode router](#mode-router).
 - Confirms every code change with the user before committing.
 
 **Does NOT:**
 - Generate GTM templates, sGTM container configs, or Stape relay setups. The whole point is to live in the project's code.
+- **Install sales/checkout conversion events (`Purchase`, `AddPaymentInfo`) by default.** These fire on the checkout platform (Hotmart/Eduzz/Kiwify), not the site — installing them site-side double-counts ROAS and breaks dedup (checkout-side events carry different event_ids). Only add them when the user **explicitly requests** AND confirms the site itself processes the sale (`generate_event.py` enforces this via `--allow-sales-event`). `InitiateCheckout` (the buy-button click, which happens on the site) stays default.
 - Touch live ad accounts. Conversion configuration in Meta Events Manager / Google Ads / TikTok Events Manager is a human step (the skill produces a checklist).
 - Ship a default consent banner. LGPD/GDPR gates are opt-in via the `enable-lgpd` mode.
 - Operate ad campaigns — that's `meta-ads-operator`. Plan analytics strategy — that's `analytics-tracking`. This skill is the **infrastructure layer** that feeds them both.
@@ -48,16 +49,17 @@ This skill works with PII (emails, phones) and platform secrets (CAPI tokens, GA
 
 ## Mode router
 
-When the skill triggers, identify which mode the user wants. If it's ambiguous, **ask** via `AskUserQuestion` — don't guess. The 6 modes:
+When the skill triggers, identify which mode the user wants. If it's ambiguous, **ask** via `AskUserQuestion` — don't guess. The 7 modes:
 
 | Mode | When to use | Entry point |
 |------|-------------|-------------|
 | **install** | First-time install on a project with no native tracking | [Install workflow](#install-workflow) |
-| **add-event** | A new event (e.g. `Purchase`, `Schedule`) needs to fire on an existing install | `scripts/generate_event.py` |
+| **add-event** | A new event (e.g. `Schedule`, `Search`) needs to fire on an existing install. Sales events require `--allow-sales-event` (see "Does NOT") | `scripts/generate_event.py` |
 | **add-platform** | Client already has Meta + GA4; now wants TikTok added 3 months later | [Add-platform workflow](#add-platform-workflow) |
 | **audit** | Site already has GTM or other tracking — figure out what's running before changing anything | `scripts/audit_existing_tags.py` + [`references/universal-event-layer.md`](references/universal-event-layer.md) |
 | **gtm-migration** | Site has live GTM and we want to switch to native without losing data | [GTM migration workflow](#gtm-migration-workflow) |
 | **enable-lgpd** | Client needs LGPD/GDPR consent gating retroactively | [`references/lgpd-consent.md`](references/lgpd-consent.md) + `assets/lgpd-consent-banner.tsx` |
+| **review-page** | One or more newly created/modified page files need tracking-coverage verification (auto-triggered by the Exos page hook, or manual "revisar tracking da página") | [Review-page workflow](#review-page-workflow) |
 
 Default if the user just says "install tracking for X" → **install**.
 
@@ -101,7 +103,7 @@ Out of scope: HTML estático, Astro, Nuxt, SvelteKit, mobile. Adding a stack lat
 
 The default mode. Six steps:
 
-1. **Confirm scope.** Read `.tracking.json` (or generate skeleton). Confirm which platforms are `enabled: true` and which events are listed in `events[]`. If the user said "install Meta and GA4" but `.tracking.json` has TikTok enabled, surface the mismatch and ask.
+1. **Confirm scope.** Read `.tracking.json` (or generate skeleton). Confirm which platforms are `enabled: true` and which events are listed in `events[]`. If the user said "install Meta and GA4" but `.tracking.json` has TikTok enabled, surface the mismatch and ask. If `events[]` or the user request includes `Purchase`/`AddPaymentInfo`, **stop and apply the sales-event rule** (see "Does NOT" above): warn that purchases fire on the checkout platform and require explicit confirmation before including them.
 
 2. **Detect the stack.** Run `scripts/detect_stack.sh`. Set `stack` in `.tracking.json` if missing.
 
@@ -145,9 +147,22 @@ Most legacy Exos sites have GTM and we want to switch to native without losing d
 
 ---
 
+## Review-page workflow
+
+Input: one or more page file paths (e.g. `src/pages/NovaLanding.tsx`, `app/promo/page.tsx`). Triggered automatically by the Exos page hook (PostToolUse on Write) or manually ("revisa o tracking dessa página").
+
+0. **Check install state.** Locate `<ClientFolder>/.tracking.json` and the universal layer (`lib/track.ts` / `src/lib/track.ts`). If the project has **no native tracking** (e.g. a GTM-only or iframe-form site), do NOT fail: report "no native tracking installed" and suggest running **install** mode (or audit → gtm-migration if GTM is live). Stop there.
+1. **PageView coverage.** `PixelBootstrap` fires `PageView` on hard load and on client-side route changes (the templates listen for pathname changes). If the site's bootstrap predates that fix or was edited, check whether the page is reachable only via client navigation and flag missing route-change coverage.
+2. **CTA/form coverage.** Every CTA button, form submit, scheduling link, and WhatsApp/phone link on the page must have an appropriate `track()` call: `Lead` (capture forms), `Contact` (WhatsApp/phone), `Schedule` (booking), `InitiateCheckout` (buy buttons), `ViewContent`/`Search` where relevant. **Never propose `Purchase`/`AddPaymentInfo`** — sales events are opt-in (scope rule above).
+3. **Param correctness.** `value`/`currency` on checkout-class events; email/phone passed **raw** to `track()` on form submits (the server hashes); no PII hashed client-side; `externalId` passed when the form/CRM returns a stable ID.
+4. **Config parity.** Every event used on the page is listed in `.tracking.json` `events[]` — wire missing ones via `scripts/generate_event.py`.
+5. **Output.** A short coverage report (table: element → expected event → status) + proposed diffs. Apply diffs **only with explicit user approval**. Pages with genuinely no conversion surface (privacy policy, thank-you-only) pass with a "PageView-only" verdict — that is not a failure.
+
+---
+
 ## Critical heads-up (things that bite people)
 
-- **Graph API version.** Lives in `.env` as `META_GRAPH_VERSION` (default `v24.0` as of late 2025). **Do not hardcode** in generated TS. Meta drops versions after ~2 years — see [`references/meta-capi.md`](references/meta-capi.md) for the changelog link.
+- **Graph API version.** Lives in `.env` as `META_GRAPH_VERSION` (default `v25.0` as of Feb 2026). **Do not hardcode** in generated TS. Meta drops versions after ~2 years — see [`references/meta-capi.md`](references/meta-capi.md) for the changelog link.
 - **GA4 cookie format changed in May 2025.** The old regex on `_ga` (`GA1.2.X.Y` → `X.Y`) broke. The skill's templates use `gtag('get', '<measurement_id>', 'client_id', cb)` instead. See [`references/ga4-mp.md`](references/ga4-mp.md).
 - **`_fbc` is conditional.** The cookie only exists if the user landed via `?fbclid=...`. Never synthesize one from nothing. The template's `cookies.ts` does the right thing — if the user edits it, remind them.
 - **`event_id` dedup window is 48h.** If your CAPI POST is delayed (queue backlog, retry loop), Meta may have already accepted the Pixel-side event and forget about it. Don't add long retry delays in the fan-out endpoint.

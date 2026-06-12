@@ -11,7 +11,7 @@
  * Read references/universal-event-layer.md for the contract.
  */
 
-import { getGa4ClientId } from './cookies';
+import { getGa4ClientId, getGa4SessionId } from './cookies';
 
 export type EventName =
   | 'PageView'
@@ -189,10 +189,11 @@ export async function track(name: EventName, params: EventParams = {}): Promise<
   }
 
   // 2. Server-side fan-out — POST raw params (server hashes PII once)
-  const ga4ClientId =
-    process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID && typeof window !== 'undefined'
-      ? await getGa4ClientId(process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID)
-      : undefined;
+  const ga4MeasurementId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
+  const [ga4ClientId, ga4SessionId] =
+    ga4MeasurementId && typeof window !== 'undefined'
+      ? await Promise.all([getGa4ClientId(ga4MeasurementId), getGa4SessionId(ga4MeasurementId)])
+      : [undefined, undefined];
 
   const endpoint = process.env.NEXT_PUBLIC_TRACKING_ENDPOINT || '/api/track/';
 
@@ -208,6 +209,7 @@ export async function track(name: EventName, params: EventParams = {}): Promise<
         event_time,
         event_source_url,
         ga4_client_id: ga4ClientId,
+        ga4_session_id: ga4SessionId,
       }),
     });
   } catch {

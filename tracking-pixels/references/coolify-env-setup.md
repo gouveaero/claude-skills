@@ -18,7 +18,7 @@ Gabriel runs two Coolify instances:
 Per app:
 - `META_PIXEL_ID` — public, used client-side, prefix `NEXT_PUBLIC_` for Next.js exposure
 - `META_CAPI_TOKEN` — secret, server-only
-- `META_GRAPH_VERSION` — public-ish, default `v24.0`
+- `META_GRAPH_VERSION` — public-ish, default `v25.0`
 - `META_TEST_EVENT_CODE` — leave empty in production
 - `GA4_MEASUREMENT_ID` — public, prefix `NEXT_PUBLIC_`
 - `GA4_API_SECRET` — secret, server-only

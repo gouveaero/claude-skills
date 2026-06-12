@@ -10,7 +10,9 @@
 
 import Script from 'next/script';
 import { useEffect } from 'react';
-import { captureAttributionCookies, track as _track } from '@/lib/track';
+import { usePathname } from 'next/navigation';
+import { track as _track } from '@/lib/track';
+import { captureAttributionCookies } from '@/lib/cookies';
 
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 const GA4_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
@@ -18,11 +20,18 @@ const GOOGLE_ADS_CONVERSION_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_I
 const TIKTOK_PIXEL_ID = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
 
 export function PixelBootstrap() {
+  const pathname = usePathname();
+
   useEffect(() => {
     captureAttributionCookies();
-    // Initial PageView — fires Pixel + CAPI together
-    void _track('PageView');
   }, []);
+
+  // PageView on initial load AND on every client-side route change —
+  // the layout persists across App Router navigations, so without the
+  // pathname dependency only the hard load would be tracked.
+  useEffect(() => {
+    void _track('PageView');
+  }, [pathname]);
 
   return (
     <>

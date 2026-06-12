@@ -21,6 +21,27 @@
       "prompt": "O Dr. Kleber já tem tracking nativo instalado (Meta + GA4). Agora ele decidiu rodar campanhas TikTok também. Preciso adicionar TikTok Pixel + Events API ao site dele. Pixel ID: 7234567890123456789. Já tenho o access token.",
       "expected_output": "Skill should run in add-platform mode: (1) read existing .tracking.json, flip platforms.tiktok.enabled to true, set pixel_id; (2) append VITE_TIKTOK_PIXEL_ID or NEXT_PUBLIC_TIKTOK_PIXEL_ID + TIKTOK_ACCESS_TOKEN to .env.example; (3) add TikTok Pixel <Script> block to existing PixelBootstrap.tsx (NOT replace — append); (4) verify fan-out endpoint already has sendToTiktok (it does — was just gated by env var presence); (5) ask user to add access_token to .env.local and Coolify, then test with TIKTOK_TEST_EVENT_CODE.",
       "files": []
+    },
+    {
+      "id": 4,
+      "name": "review-page-untracked-cta",
+      "prompt": "Acabei de criar a página app/mentoria/page.tsx no site da Elen (Exos/Elen_Tolentino/website/, já tem tracking nativo instalado). A página tem um form de captação no hero (nome, email, whatsapp) e um botão flutuante de WhatsApp. Revisa o tracking dessa página.",
+      "expected_output": "Skill should run in review-page mode: (1) locate .tracking.json + lib/track.ts and confirm install state; (2) check PageView coverage (PixelBootstrap fires on route changes); (3) produce a coverage report flagging the hero form missing track('Lead', {email, phone}) and the WhatsApp button missing track('Contact'); (4) check both events are listed in .tracking.json events[] (wire via generate_event.py if missing); (5) propose diffs but apply ONLY after explicit user approval; (6) NOT propose Purchase or AddPaymentInfo. Variant: the same prompt against Leticia_Lang/site (no native tracking) must NOT fail — it reports 'no native tracking installed' and suggests install mode (or audit → gtm-migration since GTM is live).",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "install-with-purchase-confirmation",
+      "prompt": "Instala o tracking no site novo da cliente (Next.js App Router): Meta + GA4, com Lead no form e o evento de Purchase no botão de comprar, que manda pro checkout da Eduzz.",
+      "expected_output": "Skill should trigger the sales-event rule BEFORE installing Purchase: (1) warn that purchases are completed on the checkout platform (Eduzz), not the site — a buy-button click is InitiateCheckout, not Purchase; (2) explain that site-side Purchase double-counts ROAS and breaks dedup (checkout-side events carry different event_ids); (3) propose InitiateCheckout on the buy button instead and require explicit user confirmation (and --allow-sales-event on generate_event.py) before ever adding Purchase; (4) proceed normally with the rest of the install (PageView, Lead, Meta+GA4).",
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "default-install-excludes-sales",
+      "prompt": "Instala tracking nativo completo no site novo (Next.js App Router), Meta + GA4 + Google Ads. Pode configurar os eventos padrão.",
+      "expected_output": "Default install must NOT include Purchase or AddPaymentInfo anywhere: (1) generated .tracking.json events[] contains PageView/Lead-class events only (InitiateCheckout allowed if a buy button exists); (2) google_ads.conversion_labels has no Purchase key; (3) .env.example has the GADS_LABEL_PURCHASE line commented out; (4) capability stays intact — EventName union and platform name maps in lib/track.ts still include Purchase/AddPaymentInfo for future opt-in via add-event + --allow-sales-event.",
+      "files": []
     }
   ]
 }

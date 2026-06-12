@@ -110,6 +110,7 @@ type TrackBody = {
   event_time: number;
   event_source_url: string;
   ga4_client_id?: string;
+  ga4_session_id?: string;
 };
 
 async function sendToMeta(body: TrackBody, cookies: Record<string, string>, ip?: string, ua?: string) {
@@ -139,7 +140,7 @@ async function sendToMeta(body: TrackBody, cookies: Record<string, string>, ip?:
     custom_data: { value: p.value, currency: p.currency },
   };
 
-  const version = process.env.META_GRAPH_VERSION ?? 'v24.0';
+  const version = process.env.META_GRAPH_VERSION ?? 'v25.0';
   const url = `https://graph.facebook.com/${version}/${process.env.META_PIXEL_ID}/events?access_token=${process.env.META_CAPI_TOKEN}`;
   const payload: Record<string, unknown> = { data: [event], partner_agent: 'tracking-pixels-skill-v1' };
   if (process.env.META_TEST_EVENT_CODE) payload.test_event_code = process.env.META_TEST_EVENT_CODE;
@@ -172,6 +173,11 @@ async function sendToGa4(body: TrackBody, ip?: string, ua?: string) {
     transaction_id: body.event_id,
     page_location: body.event_source_url,
   };
+  // Session stitching — MP events without session_id land session-less and break
+  // session-scoped reports. MP requires a numeric string.
+  if (body.ga4_session_id && /^\d+$/.test(body.ga4_session_id)) {
+    eventParams.session_id = body.ga4_session_id;
+  }
   if (process.env.DEBUG_GA4 === '1') eventParams.debug_mode = true;
 
   try {

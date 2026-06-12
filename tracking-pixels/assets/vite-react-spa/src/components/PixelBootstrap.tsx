@@ -83,5 +83,35 @@ export function PixelBootstrap() {
     void track('PageView');
   }, []);
 
+  // PageView on client-side route changes — react-router (and any history-based
+  // router) navigates via pushState/replaceState, which fire no native event.
+  // Patch them once; the lastPath guard skips query-only updates (filters etc.).
+  useEffect(() => {
+    let lastPath = window.location.pathname;
+    const fireIfPathChanged = () => {
+      if (window.location.pathname === lastPath) return;
+      lastPath = window.location.pathname;
+      void track('PageView');
+    };
+
+    const origPush = window.history.pushState.bind(window.history);
+    const origReplace = window.history.replaceState.bind(window.history);
+    window.history.pushState = (...args: Parameters<History['pushState']>) => {
+      origPush(...args);
+      fireIfPathChanged();
+    };
+    window.history.replaceState = (...args: Parameters<History['replaceState']>) => {
+      origReplace(...args);
+      fireIfPathChanged();
+    };
+    window.addEventListener('popstate', fireIfPathChanged);
+
+    return () => {
+      window.history.pushState = origPush;
+      window.history.replaceState = origReplace;
+      window.removeEventListener('popstate', fireIfPathChanged);
+    };
+  }, []);
+
   return null;
 }

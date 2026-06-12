@@ -37,6 +37,7 @@ Spec: https://developers.google.com/analytics/devguides/collection/protocol/ga4/
         "currency": "BRL",
         "value": 100,
         "transaction_id": "<event_id>",
+        "session_id": "1747000000",
         "engagement_time_msec": 1
       }
     }
@@ -46,8 +47,9 @@ Spec: https://developers.google.com/analytics/devguides/collection/protocol/ga4/
 
 - `client_id` is **required**. It must match what `gtag.js` set in the browser, or you fragment the user.
 - `user_id` is optional but recommended for logged-in users (your internal ID, NOT email).
-- `timestamp_micros` defaults to now if omitted.
+- `timestamp_micros` defaults to now if omitted. Events can be **backdated at most 72 hours** — older timestamps are dropped.
 - `engagement_time_msec` is needed for the event to show up in standard reports (otherwise it's "non-engaged" and many reports filter it out). Minimum `1`.
+- `session_id` (event param) is **strongly recommended** — see the session-stitching section below.
 
 ## Limits
 
@@ -106,6 +108,31 @@ The skill calls this client-side, attaches the result to the `/api/track` POST b
 
 Source: https://www.trkkn.com/insights/ga4-cookie-format-has-changed-what-you-need-to-know-about-ga-measurement-id-and-session-id/
 
+## `session_id` — session stitching
+
+MP events that arrive without a `session_id` param land **session-less**: they don't attach to the user's live session, which breaks session-scoped reports and attribution (the event shows up under "(not set)" sessions). Always send it alongside `client_id`.
+
+**Capture (client-side)** — same getter pattern as `client_id`:
+
+```ts
+// lib/cookies.ts — getGa4SessionId(measurementId)
+window.gtag('get', measurementId, 'session_id', (id) => resolve(String(id)));
+// Fallback if gtag is wedged: parse the _ga_<CONTAINER> cookie
+// (CONTAINER = measurement id minus "G-"):
+//   pre-May-2025:  "GS1.1.<session_id>.<n>..."
+//   current:       "GS2.1.s<session_id>$o<n>$..."
+// Regex used by the skill: /^GS\d\.\d\.s?(\d{9,11})/
+```
+
+**Forward (server-side)** — as an event param, guarded by MP's format requirement:
+
+- MP requires `session_id` to match **`^\d+$`** (numeric string). Never forward the raw `GS2.1.s...` cookie value — extract the digits.
+- The skill's fan-out validates with the regex before including it; a malformed value is dropped silently rather than poisoning the payload.
+
+Sending a custom `session_id` can also create a session server-side (no `session_start` needed), but for the skill's use case the goal is always to **stitch into the browser session**, so the gtag getter value wins.
+
+**Scope note:** MP is a *supplement* to gtag, not a replacement — Google's own guidance. The browser tag remains the source of sessions, consent state, and Enhanced Measurement; MP adds the ad-blocker-proof server copy.
+
 ## Server-side fan-out template
 
 ```ts
@@ -113,6 +140,7 @@ async function sendToGa4(args: {
   measurementId: string;
   apiSecret: string;
   clientId: string;
+  sessionId?: string;
   userId?: string;
   eventName: string;
   eventTimeMicros: number;
@@ -127,6 +155,8 @@ async function sendToGa4(args: {
       name: args.eventName,
       params: {
         engagement_time_msec: 1,
+        // session stitching — only if numeric (MP requirement)
+        ...(args.sessionId && /^\d+$/.test(args.sessionId) ? { session_id: args.sessionId } : {}),
         ...args.params,
       },
     }],
@@ -164,6 +194,7 @@ Same hashing rules as Google Ads (SHA-256 hex lowercase, E.164 phone with `+`). 
 ## Common pitfalls
 
 - **`client_id` mismatch** between gtag (browser) and MP (server) → looks like 2 different users. Always pass through the `_ga`-derived ID via `gtag('get', ...)`.
+- **No `session_id`** → event lands session-less, breaks session-scoped reports/attribution. Capture via `gtag('get', ..., 'session_id', cb)` and forward (numeric string only).
 - **No `engagement_time_msec`** → event hidden from many reports. Always include `engagement_time_msec: 1` minimum.
 - **Sending reserved event names** → silently dropped. Always map (table above).
 - **Test events polluting Realtime** without filter → use Internal Traffic filter in GA4 Admin to exclude your dev IP.

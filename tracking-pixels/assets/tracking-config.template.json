@@ -34,9 +34,9 @@
       "enabled": false,
       "conversion_id": "",
       "conversion_labels": {
-        "_help": "One label per event type: { \"Lead\": \"abc/xyz\", \"Purchase\": \"abc/qrs\" }. Generated in Google Ads → Tools → Conversions → New conversion action.",
+        "_help": "One label per event type: { \"Lead\": \"abc/xyz\", \"InitiateCheckout\": \"abc/qrs\" }. Generated in Google Ads → Tools → Conversions → New conversion action. Sales events (Purchase, AddPaymentInfo) are opt-in only — see SKILL.md scope rule.",
         "Lead": "",
-        "Purchase": "",
+        "InitiateCheckout": "",
         "Schedule": "",
         "Contact": ""
       },
@@ -73,7 +73,7 @@
     {
       "name": "PageView",
       "fire_on": "every_route",
-      "_help": "Universal event name. See references/universal-event-layer.md for name mapping per platform."
+      "_help": "Universal event name. See references/universal-event-layer.md for name mapping per platform. Sales events (Purchase, AddPaymentInfo) are opt-in only — purchases fire on the checkout platform (Hotmart/Eduzz/Kiwify), not the site. See SKILL.md scope rule."
     },
     {
       "name": "Lead",

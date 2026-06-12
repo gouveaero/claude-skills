@@ -60,7 +60,8 @@ Open GA4 → Configure → DebugView.
 
 - [ ] PageView arrives within seconds.
 - [ ] User stream count increments by 1.
-- [ ] `transaction_id` is populated on Lead/Purchase events.
+- [ ] `transaction_id` is populated on Lead events (and Purchase, only if sales events were explicitly opted in — see SKILL.md scope rule).
+- [ ] `session_id` is populated on MP events (session stitching — see references/ga4-mp.md).
 - [ ] Reserved event names (`session_start`, `first_visit`) are NOT in your custom events list (those are GA4's automatic events).
 
 ## 6. TikTok Events Manager — Test Event tab
@@ -112,5 +113,6 @@ After 24 hours of real traffic:
 | Match quality < 50 on Meta | Missing `_fbp`/`_fbc` cookies | Confirm Pixel JS is loading (DevTools → Application → Cookies) |
 | GA4 events fire but don't show in reports | Missing `engagement_time_msec` param | Check that server-side MP payload includes `engagement_time_msec: 1` |
 | TikTok diagnostics shows "No events received" | `event_source: "website"` typo | Should be `"web"` exactly |
-| Lots of duplicate purchases in GA4 | `transaction_id` reuse | Use `event_id` (UUID) not `order_id` |
+| Lots of duplicate purchases in GA4 | `transaction_id` reuse — or site-side Purchase firing alongside the checkout platform's purchase event | Use `event_id` (UUID) not `order_id`; remember site-side Purchase is opt-in (SKILL.md scope rule) |
+| GA4 MP events show under "(not set)" sessions | Missing `session_id` param | Confirm `track.ts` captures it via `gtag('get', ..., 'session_id')` and the server forwards it (numeric string) |
 | Pixel fires but CAPI doesn't | CAPI token expired / wrong / has no permission | Regenerate in Events Manager, update Coolify, redeploy |

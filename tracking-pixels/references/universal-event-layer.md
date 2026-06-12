@@ -61,13 +61,15 @@ The same `event_id` is used in step 2 (passed to `fbq` as `{eventID}`, to `ttq` 
 | `Lead` | `Lead` | `generate_lead` | `SubmitForm` |
 | `CompleteRegistration` | `CompleteRegistration` | `sign_up` | `CompleteRegistration` |
 | `InitiateCheckout` | `InitiateCheckout` | `begin_checkout` | `InitiateCheckout` |
-| `AddPaymentInfo` | `AddPaymentInfo` | `add_payment_info` | `AddPaymentInfo` |
-| `Purchase` | `Purchase` | `purchase` | `CompletePayment` |
+| `AddPaymentInfo` † | `AddPaymentInfo` | `add_payment_info` | `AddPaymentInfo` |
+| `Purchase` † | `Purchase` | `purchase` | `CompletePayment` |
 | `Contact` | `Contact` | `contact` (custom) | `Contact` |
 | `Schedule` | `Schedule` | `schedule` (custom) | `ClickButton` |
 | `SubmitApplication` | `SubmitApplication` | `submit_application` (custom) | `SubmitForm` |
 | `Search` | `Search` | `search` | `Search` |
 | `AddToCart` | `AddToCart` | `add_to_cart` | `AddToCart` |
+
+† **Opt-in only** — sales/checkout events stay in the `EventName` union (capability preserved) but are never installed by default: purchases fire on the checkout platform (Hotmart/Eduzz/Kiwify), not the site. See the scope rule in SKILL.md.
 
 Implementation in `lib/track.ts` uses three lookup objects (`META_NAME`, `GA4_NAME`, `TIKTOK_NAME`) — direct map, no string mangling.
 

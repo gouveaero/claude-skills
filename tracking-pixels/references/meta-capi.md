@@ -9,7 +9,7 @@ POST https://graph.facebook.com/{GRAPH_VERSION}/{PIXEL_ID}/events?access_token={
 Content-Type: application/json
 ```
 
-- `GRAPH_VERSION` lives in `.env` as `META_GRAPH_VERSION` (default `v24.0`, released Oct 2025 alongside Marketing API v24). **Never hardcode** — Meta deprecates versions on ~2-year cycle. Changelog: https://developers.facebook.com/docs/graph-api/changelog/versions/
+- `GRAPH_VERSION` lives in `.env` as `META_GRAPH_VERSION` (default `v25.0`, released Feb 2026 alongside Marketing API v25). **Never hardcode** — Meta deprecates versions on ~2-year cycle. Changelog: https://developers.facebook.com/docs/graph-api/changelog/versions/
 - `PIXEL_ID` lives in `.tracking.json` as `platforms.meta.pixel_id` (a string of digits).
 - `CAPI_TOKEN` lives in `.env.local` / Coolify env vars. Never in code. Generated in Events Manager → Settings → Conversions API → Generate Access Token.
 
@@ -74,6 +74,14 @@ Normalize → SHA-256 → hex string → lowercase, for these fields:
 The skill's `lib/hash.ts` does this — read it instead of reimplementing.
 
 Spec: https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/customer-information-parameters
+
+### `external_id` and Event Match Quality (EMQ)
+
+Sending a hashed `external_id` is one of the cheaper EMQ wins after `em`/`ph` (email ≈ +4 points, phone ≈ +3). Rules of thumb:
+
+- Use a **stable internal ID** — CRM contact ID, lead ID, database user ID. Never email or phone repackaged as external_id (those already have their own fields).
+- The same ID must be sent consistently across events for the same person, or it hurts instead of helps.
+- The templates already hash and forward `params.externalId` — call sites just need to pass it when the form/CRM produces one (e.g. the GrowAI/CRM lead ID returned on submit).
 
 ## `_fbc` and `_fbp` cookies
 

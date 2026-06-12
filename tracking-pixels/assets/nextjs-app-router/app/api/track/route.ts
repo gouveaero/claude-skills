@@ -50,6 +50,7 @@ type TrackBody = {
   event_time: number;
   event_source_url: string;
   ga4_client_id?: string;
+  ga4_session_id?: string;
 };
 
 const META_NAME: Record<string, string> = {
@@ -145,7 +146,7 @@ async function sendToMeta(
 ): Promise<{ platform: string; status: string }> {
   const pixelId = process.env.META_PIXEL_ID!;
   const token = process.env.META_CAPI_TOKEN!;
-  const version = process.env.META_GRAPH_VERSION ?? 'v24.0';
+  const version = process.env.META_GRAPH_VERSION ?? 'v25.0';
   const testCode = process.env.META_TEST_EVENT_CODE;
 
   const p = body.params;
@@ -234,6 +235,11 @@ async function sendToGa4(
       quantity: c.quantity,
     })),
   };
+  // Session stitching — MP events without session_id land session-less and break
+  // session-scoped reports. MP requires a numeric string.
+  if (body.ga4_session_id && /^\d+$/.test(body.ga4_session_id)) {
+    eventParams.session_id = body.ga4_session_id;
+  }
   if (process.env.DEBUG_GA4 === '1') eventParams.debug_mode = true;
 
   const payload = {

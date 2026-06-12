@@ -5,7 +5,7 @@ Read this when the skill needs to wire Google Ads conversion tracking. There are
 | Mode | When | How |
 |------|------|-----|
 | **Enhanced Conversions for Web** | Conversion happens on-site (purchase, signup) | `gtag('set', 'user_data', {...})` + `gtag('event', 'conversion', {send_to})` on the client |
-| **Enhanced Conversions for Leads** | Conversion happens off-site (sales rep closes a lead by phone) | Lead form fires gtag (captures `gclid` + user_data); later, you upload the closed-won conversion via Google Ads API `ConversionAdjustmentService` matching on hashed email/phone |
+| **Enhanced Conversions for Leads** | Conversion happens off-site (sales rep closes a lead by phone) | Lead form fires gtag (captures `gclid` + user_data); later, you upload the closed-won conversion via the **Data Manager API** matching on hashed email/phone |
 
 The skill's default install does **EC for Web** (client-side `gtag`). EC for Leads requires CRM integration that's out of scope — the skill notes it as a follow-up if the client mentions offline sales.
 
@@ -17,7 +17,7 @@ The skill's default install does **EC for Web** (client-side `gtag`). EC for Lea
   "conversion_id": "AW-123456789",
   "conversion_labels": {
     "Lead": "abc123/xyz",
-    "Purchase": "abc123/qrs",
+    "InitiateCheckout": "abc123/qrs",
     "Schedule": "abc123/sch"
   }
 }
@@ -107,20 +107,23 @@ When a lead becomes a customer days later via a sales call:
 
 1. Frontend logged the lead via `gtag('event', 'conversion', ...)` with `transaction_id: event_id`. Google captures the `gclid` from the cookie automatically.
 2. Sales rep marks the deal as won in CRM. Webhook fires to your backend.
-3. Backend calls Google Ads API `ConversionAdjustmentService.uploadCallConversions` (or `uploadClickConversions`) with `gclid` + hashed `email`/`phone` + `conversion_action_id` + `conversion_value`.
+3. Backend uploads the conversion via the **Data Manager API** (`datamanager.googleapis.com`) with `gclid` (and/or `gbraid`) + hashed `email`/`phone` + conversion action + value.
 4. Google attributes the conversion to the original ad click.
 
-Library: `google-ads-nodejs-client` (official) or `google-ads-api` (community). Auth via OAuth2 + developer token + login customer ID.
+> **⚠️ Dead path (June 2026):** `uploadClickConversions` / `ConversionAdjustmentService` via the classic Google Ads API is **blocked for new requests after June 15, 2026**. All offline conversion / ECL uploads go through the Data Manager API now. If you find legacy code or tutorials pointing at `uploadClickConversions`, do not replicate them.
+> Source: https://ads-developers.googleblog.com/2026/05/changes-to-offline-click-conversion.html
 
-Reference: https://support.google.com/google-ads/answer/11021502
+Since July 2025 (rollout completed Oct 2025), a single upload may carry **both `gclid` and `gbraid`** — no more either/or between web and iOS-app click IDs.
+
+Reference: https://support.google.com/google-ads/answer/15707550 (Data Manager + ECL)
 
 The skill **does not** generate this — it's a CRM-specific integration that depends on the client's stack (HubSpot? Pipedrive? Notion? custom DB?). If the user asks for EC for Leads, suggest opening a follow-up task and link this section.
 
 ## Unification (April 2026)
 
-Google is unifying EC for Web + EC for Leads into a single toggle in Google Ads UI. After April 2026, you turn on "Enhanced Conversions" once and both flavors are available — the site tags, Data Manager imports, and API uploads can all coexist for the same conversion action. Skill behavior doesn't change (we always set `user_data`); only the UI explanation gets simpler.
+Since April 2026, Enhanced Conversions for Web + for Leads are a **single on/off toggle** in Google Ads, and Google accepts user data **simultaneously** from website tags (gtag), Data Manager, and the API for the same conversion action — you no longer choose one channel. Skill behavior doesn't change (we always set `user_data`); only the UI explanation gets simpler.
 
-Source: https://support.google.com/google-ads/answer/13258081
+Sources: https://support.google.com/google-ads/answer/16884284 · https://support.google.com/google-ads/answer/13258081
 
 ## Debug
 

@@ -57,3 +57,35 @@ export function getGa4ClientId(measurementId: string): Promise<string | undefine
     setTimeout(() => done(undefined), 500);
   });
 }
+
+/**
+ * GA4 session_id — needed for Measurement Protocol session stitching.
+ * Without it, MP events land session-less and break session-scoped reports.
+ * Primary: gtag getter. Fallback: parse the _ga_<CONTAINER> cookie
+ * (handles pre-May-2025 "GS1.1.<sid>." and current "GS2.1.s<sid>$" formats).
+ * MP requires session_id to be a numeric string (^\d+$).
+ */
+export function getGa4SessionId(measurementId: string): Promise<string | undefined> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined' || !window.gtag) {
+      return resolve(sessionIdFromCookie(measurementId));
+    }
+    let resolved = false;
+    const done = (v: string | undefined) => {
+      if (!resolved) {
+        resolved = true;
+        resolve(v);
+      }
+    };
+    window.gtag('get', measurementId, 'session_id', (id: unknown) =>
+      done(typeof id === 'string' || typeof id === 'number' ? String(id) : undefined),
+    );
+    setTimeout(() => done(sessionIdFromCookie(measurementId)), 500);
+  });
+}
+
+function sessionIdFromCookie(measurementId: string): string | undefined {
+  const raw = getCookie(`_ga_${measurementId.replace(/^G-/, '')}`);
+  const m = raw?.match(/^GS\d\.\d\.s?(\d{9,11})/);
+  return m?.[1];
+}

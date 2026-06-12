@@ -6,7 +6,7 @@
  * route handler.
  */
 
-import { getGa4ClientId } from './cookies';
+import { getGa4ClientId, getGa4SessionId } from './cookies';
 
 export type EventName =
   | 'PageView'
@@ -151,8 +151,10 @@ export async function track(name: EventName, params: EventParams = {}): Promise<
     }
   }
 
-  const ga4ClientId =
-    GA4_ID && typeof window !== 'undefined' ? await getGa4ClientId(GA4_ID) : undefined;
+  const [ga4ClientId, ga4SessionId] =
+    GA4_ID && typeof window !== 'undefined'
+      ? await Promise.all([getGa4ClientId(GA4_ID), getGa4SessionId(GA4_ID)])
+      : [undefined, undefined];
 
   if (!TRACKING_ENDPOINT) return;
 
@@ -170,6 +172,7 @@ export async function track(name: EventName, params: EventParams = {}): Promise<
         event_time,
         event_source_url,
         ga4_client_id: ga4ClientId,
+        ga4_session_id: ga4SessionId,
       }),
     });
   } catch {
