@@ -19,6 +19,24 @@ seguem a regra de discrição do SKILL.md: nomeiam o evento, não o canal.
 | Manychat (automação IG) | `organic` | `manychat` | `instagram` | — | `<evento>-ma` |
 | YouTube (descrição/cards) | `youtube` | `descricao` | — | — | `<evento>-y` |
 | Bio YouTube / about | `youtube` | `bio` | — | — | `<evento>-yb` |
+| **Página do Facebook** (posts e about) | `organic` | `feed` | `facebook` | — | `<evento>-fb` |
+| **Área de membros** (base de alunos) | `organic` | `area_membros` | — | — | `<evento>-am` |
+
+### Área de membros = origem, não destino
+
+O link é da **página de captação**, colocado *dentro* da área de membros
+(banner, aviso, aula) para a base de alunos que já comprou. É audiência quente e
+gratuita, quase sempre esquecida no plano de mídia — e sem UTM própria ela
+aparece no relatório como tráfego direto, escondendo o melhor canal da operação.
+
+`utm_medium=area_membros` **estende** a lista fechada de mediums orgânicos do
+guia publicado. É proposital: jogar em `outros` destrói a leitura. Ao usar pela
+primeira vez num cliente, avise o usuário para incluir o valor em
+`Institucional/website/lib/utm-builder.ts`, senão o padrão publicado e o que a
+agência usa na prática divergem.
+
+Se a plataforma de membros injeta token de acesso na URL, esse link é pessoal:
+não encurte nem publique — vale só o link limpo da LP.
 
 ## E-mail
 

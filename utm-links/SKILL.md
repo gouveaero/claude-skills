@@ -48,6 +48,12 @@ raramente não se aplicam. Se o lançamento tem ativos com URL própria (pesquis
 Typebot, e-book, grupo de WhatsApp), gere link para eles também: eles também
 são pontos de entrada.
 
+**Dois canais que quase sempre são esquecidos e entram por padrão:** a **área de
+membros** (o link da LP colocado dentro da plataforma, para a base que já
+comprou — audiência quente e gratuita) e a **página do Facebook**. Sem UTM
+própria, os dois caem como tráfego direto no relatório e somem. Ver
+`channel-defaults.md`.
+
 ⚠️ **Meta Ads e Google Ads não levam valores fixos** — levam as macros da
 plataforma (`{{campaign.name}}`, `{keyword}`…), coladas no campo de parâmetros
 de URL da conta. Ver a taxonomia para os dois templates completos.
