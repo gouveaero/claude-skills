@@ -234,6 +234,12 @@ Regras de segurança:
   GET → concatene → PUT com o conteúdo completo.
 - Se não existir Central para a tag, **não crie doc novo** — entregue o kit no
   chat e avise que a Central não foi encontrada.
+- ⚠️ **O PUT do ClickUp é assíncrono.** Dois PUTs próximos podem persistir
+  **fora de ordem**: o GET logo depois devolve o conteúdo novo, mas minutos
+  depois o doc reverte para o anterior. Aconteceu em 28/07/2026 — a Central
+  ficou com a versão antiga mesmo após verificação bem-sucedida. Faça **um PUT
+  só** com o conteúdo final e confira de novo **depois de ~30s**, não
+  imediatamente.
 
 ## Passo 5 — Fechar
 
