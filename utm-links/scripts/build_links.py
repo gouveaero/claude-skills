@@ -186,8 +186,16 @@ def main() -> int:
 
     json.dump(summary, sys.stderr, ensure_ascii=False, indent=2)
     print(file=sys.stderr)
-    failures = [s for s in summary if s["status"].startswith(("erro", "falha"))]
-    return 1 if failures else 0
+    # "slug ja existe" também sai diferente de zero: o link não foi criado nem
+    # atualizado e alguém precisa decidir o que fazer. Sair 0 aqui faria uma
+    # reexecução parecer bem-sucedida com metade do kit faltando.
+    pending = [s for s in summary
+               if s["status"].startswith(("erro", "falha", "slug ja existe"))]
+    if pending:
+        print(f"\n⚠️  {len(pending)} link(s) exigem atenção:", file=sys.stderr)
+        for s in pending:
+            print(f"   {s['slug']}: {s['status'][:120]}", file=sys.stderr)
+    return 1 if pending else 0
 
 
 if __name__ == "__main__":

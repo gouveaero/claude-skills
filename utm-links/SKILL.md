@@ -89,12 +89,24 @@ Códigos de canal (use estes; são estáveis entre campanhas):
 | `d` | DM | `tk` | TikTok Ads |
 | `y` | YouTube | `e` / `eq` | e-mail base / quentes |
 
+O caminho normal é rodar o script, que faz URLs + short links de uma vez:
+
+```bash
+python3 ~/.claude/skills/utm-links/scripts/build_links.py spec.json --dry-run   # confere
+python3 ~/.claude/skills/utm-links/scripts/build_links.py spec.json             # cria
+```
+
+O spec é um JSON com `campaign`, `event_slug`, `destination`, `tag` e a lista
+`links` (cada item: `label`, `slug`, `channel`, e `utm` **ou** `url` **ou**
+`raw_query`). O cabeçalho do script tem o formato completo. Para um link avulso,
+na mão:
+
 ```bash
 KEY=$(python3 -c "import json;print(json.load(open('.exosgo.json'))['api_key'])")
 curl -s -X POST https://exosgo.link/rest/v3/short-urls \
   -H "X-Api-Key: $KEY" -H "Content-Type: application/json" \
   -d '{"longUrl":"<URL COM UTM>","customSlug":"<evento>-<canal>",
-       "tags":["<tag-do-lancamento>"],"findIfExists":true}'
+       "tags":["<tag-do-lancamento>","canal-<canal>"],"findIfExists":true}'
 ```
 
 Passe também **tags**: a do lançamento (`[LL][LS][POS][AGO][26]`) e uma de canal
