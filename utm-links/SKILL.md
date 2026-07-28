@@ -97,14 +97,37 @@ curl -s -X POST https://exosgo.link/rest/v3/short-urls \
        "tags":["<tag-do-lancamento>"],"findIfExists":true}'
 ```
 
-- **`findIfExists: true` é obrigatório** — torna a criação idempotente. Rodar
-  a skill de novo devolve o link existente em vez de estourar erro de slug
-  duplicado. Só omita se o usuário quiser deliberadamente um slug novo.
-- Se ainda assim vier `INVALID_SLUG`/409, o slug já existe apontando para
-  **outro** destino: relate ao usuário e proponha um sufixo (`-v2`), **nunca
-  sobrescreva** — pode haver material distribuído apontando pra lá.
+Passe também **tags**: a do lançamento (`[LL][LS][POS][AGO][26]`) e uma de canal
+(`canal-email`, `canal-whatsapp-grupos`). Sem a de canal, a aba Tags do painel
+vira uma lista de códigos opacos — é ela que responde "quantos vieram do e-mail
+vs. do grupo" em linguagem humana. A tag é interna: só quem tem API key a vê, o
+slug público continua discreto.
+
+- **`findIfExists: true`** casa pelo **conjunto inteiro** de critérios, não só
+  pelo slug. Se a URL ou as tags mudarem, ele não reconhece o link antigo, tenta
+  criar e leva 400 no slug ocupado. Ou seja: é idempotente para reexecução
+  idêntica, **não** para reconciliar mudanças.
+- 400 de slug ocupado **não** é para ser resolvido com PATCH (ver o alerta
+  abaixo). Relate ao usuário: ou edita pelo CLI, ou usa outro slug. **Nunca
+  sobrescreva destino de link já distribuído.**
 - `forwardQuery` é `true` por padrão: parâmetros extras no short link passam
   para o destino. É o que permite `exosgo.link/x?fbclid=...` continuar íntegro.
+
+> ⚠️ **Nunca use `PATCH /rest/v3/short-urls/{slug}` na instância da Exos.**
+> O banco é SQLite: o write trava em `database is locked`, o worker do
+> RoadRunner nunca volta pro pool e, depois de alguns, o Shlink devolve **503
+> em tudo — inclusive nos redirects já distribuídos**. Isso derrubou o serviço
+> em 28/07/2026. Para editar link existente, use o CLI, que roda fora do pool:
+>
+> ```bash
+> ssh vps-exos
+> docker exec <container> shlink short-url:edit <slug> -t 'TAG1' -t 'TAG2'
+> ```
+>
+> `short-url:edit` **substitui** o conjunto de tags (repita `-t` para cada uma),
+> então reinforme sempre a tag do lançamento junto com a de canal. Rode um slug
+> por vez, com pausa — e se o serviço engasgar, `docker restart <container>`
+> resolve na hora.
 
 ## Passo 3 — Link de suporte do evento
 

@@ -68,11 +68,28 @@ def build_url(destination: str, utm: dict, campaign: str) -> str:
 
 
 def shorten(api_base: str, api_key: str, long_url: str, slug: str,
-            tag: str | None) -> tuple[str | None, str]:
-    """Cria (ou reencontra) o short link. Devolve (url, status)."""
+            tags: list[str]) -> tuple[str | None, str]:
+    """Cria o short link. Devolve (short_url, status).
+
+    As tags vão no POST, na criação — é a única janela segura para gravá-las.
+    Elas tornam o painel legível: o slug é opaco de propósito (`onco-laser-eq`),
+    então sem `canal-email` a aba Tags vira uma lista de códigos. A tag é
+    interna: só quem tem API key enxerga, o slug público segue discreto.
+
+    ⚠️ NUNCA editar por HTTP (`PATCH /short-urls/{slug}`) numa instância com
+    SQLite. O write fica preso em `database is locked`, o worker do RoadRunner
+    nunca é devolvido ao pool e, depois de alguns, o Shlink responde 503 em
+    TUDO — inclusive nos redirects já distribuídos. Para editar um link que já
+    existe, use o CLI, que roda fora do pool:
+
+        ssh vps-exos
+        docker exec <container> shlink short-url:edit <slug> -t 'TAG1' -t 'TAG2'
+
+    (`short-url:edit` substitui o conjunto de tags; repita `-t` para cada uma.)
+    """
     body = {"longUrl": long_url, "customSlug": slug, "findIfExists": True}
-    if tag:
-        body["tags"] = [tag]
+    if tags:
+        body["tags"] = tags
     req = urllib.request.Request(
         f"{api_base}/short-urls",
         data=json.dumps(body).encode(),
@@ -80,11 +97,15 @@ def shorten(api_base: str, api_key: str, long_url: str, slug: str,
         method="POST",
     )
     try:
-        data = json.load(urllib.request.urlopen(req, timeout=30))
-        return data.get("shortUrl"), "ok"
+        return json.load(urllib.request.urlopen(req, timeout=30)).get("shortUrl"), "ok"
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode()[:200]
-        # Slug ocupado por OUTRO destino: nunca sobrescrever, só relatar.
+        if exc.code == 400:
+            # `findIfExists` casa pelo conjunto inteiro de critérios, não só
+            # pelo slug: se a URL ou as tags mudaram, ele não reconhece o link
+            # antigo e esbarra no slug ocupado. Reportar e deixar a decisão com
+            # o humano — sobrescrever destino de link já distribuído é pior.
+            return None, f"slug ja existe (edite pelo CLI se for intencional): {detail}"
         return None, f"erro {exc.code}: {detail}"
     except Exception as exc:  # rede fora, DNS, timeout
         return None, f"falha: {exc}"
@@ -137,9 +158,10 @@ def main() -> int:
             base = item.get("destination", destination)
             url = build_url(base, item.get("utm", {}), campaign)
 
+        tags = [t for t in (tag, item.get("channel") and f"canal-{sanitize(item['channel'])}") if t]
         short, status = (None, "dry-run")
         if slug and not args.dry_run:
-            short, status = shorten(api_base, api_key, url, slug, tag)
+            short, status = shorten(api_base, api_key, url, slug, tags)
 
         # Só os links de anúncio precisam da URL completa à vista: as macros
         # ({{campaign.name}}, {keyword}) são coladas na plataforma, e o short
@@ -147,7 +169,8 @@ def main() -> int:
         is_ad = "raw_query" in item
         rows.append((label, short, url, is_ad))
         summary.append({"label": label, "slug": slug, "short": short,
-                        "status": status, "url": url, "is_ad": is_ad})
+                        "status": status, "url": url, "is_ad": is_ad,
+                        "tags": tags})
 
     print("**Links UTM & Encurtados [padrão Exos]**\n")
     for label, short, url, is_ad in rows:
