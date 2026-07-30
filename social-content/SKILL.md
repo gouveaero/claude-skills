@@ -34,6 +34,7 @@ Gather this context (ask if not provided):
 ### 4. Resources
 - How much time can you dedicate to social?
 - Do you have existing content to repurpose?
+- For X research, do you have source URLs, timestamps, and metrics?
 - Can you create video content?
 
 ---
