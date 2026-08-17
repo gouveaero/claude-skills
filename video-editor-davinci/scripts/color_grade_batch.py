@@ -21,13 +21,13 @@ Usage:
   python3 color_grade_batch.py --mode samples \\
       --sample-clip "20260505_174342.mp4" \\
       --sample-duration 8 \\
-      --input "/Users/gabriel/Downloads/Video 01 Alex"
+      --input "<pasta>/Video 01 Alex"
 
   # Batch mode — render all clips with chosen preset:
   python3 color_grade_batch.py --mode batch \\
       --preset cinematic_warm \\
-      --input "/Users/gabriel/Downloads/Video 01 Alex" \\
-      --output "/Users/gabriel/Downloads/Video 01 Alex_graded"
+      --input "<pasta>/Video 01 Alex" \\
+      --output "<pasta>/Video 01 Alex_graded"
 """
 from __future__ import annotations
 

@@ -143,7 +143,7 @@ Save returned `adset_id`. Repeat for each adset.
 If the user provides a local file path (not URL), use CLI:
 
 ```bash
-/Users/gabriel/Library/Python/3.9/bin/meta-ads create \
+meta-ads create \
   --account act_XXXXXXXXX \
   --config campaign_config.yaml
 ```

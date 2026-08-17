@@ -12,7 +12,7 @@ O MCP oficial aceita apenas URLs públicas em `image_url`. Se o usuário fornece
 
 **Unofficial CLI (Attainment Labs v0.1.0):**
 ```bash
-/Users/gabriel/Library/Python/3.9/bin/meta-ads status \
+meta-ads status \
   --account act_XXXXXXXXX
 ```
 

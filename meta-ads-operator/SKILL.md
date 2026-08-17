@@ -168,7 +168,7 @@ Full tool reference with params: `references/tool-reference.md`.
 
 ## CLI Fallback
 
-Use `meta-ads-cli` (unofficial CLI, installed at `/Users/gabriel/Library/Python/3.9/bin/meta-ads`) for:
+Use `meta-ads-cli` (unofficial CLI, no PATH, tipicamente em `$(python3 -m site --user-base)/bin/meta-ads`) for:
 - Uploading local image/video files (MCP requires public URL for creatives)
 - Batch YAML-based campaign creation
 - CI/CD non-interactive workflows

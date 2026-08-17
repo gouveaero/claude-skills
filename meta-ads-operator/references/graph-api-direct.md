@@ -51,8 +51,8 @@ Quando operar para um cliente, pegue o token correto via `client_code` do `.meta
 ## Padrão de invocação via Bash + Python
 
 ```python
-import json, requests
-TOKEN = json.load(open("/Users/gabriel/.claude/secrets/meta-app.local.json"))["access_token"]
+import json, os, requests
+TOKEN = json.load(open(os.path.expanduser("~/.claude/secrets/meta-app.local.json")))["access_token"]
 GRAPH = "https://graph.facebook.com/v21.0"
 
 def post(path, **p):
