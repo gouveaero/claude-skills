@@ -62,6 +62,29 @@ O **link do grupo** (roteador SendFlow `sndflw.com/i/...`) não leva UTM — ele
 não é uma página do site. Encurte mesmo assim (`<evento>-grupo`): fica no
 padrão e o clique vira métrica.
 
+## SMS
+
+| Canal | source | medium | content | slug |
+|---|---|---|---|---|
+| Disparo de lista (captação) | `sms` | `disparo_lista` | `msg_<n>` | `<evento>-sms` |
+| Disparo de lista (fase de vendas) | `sms` | `disparo_lista` | `vendas` | `<evento>-oferta-sms` |
+| Segmento / lista VIP | `sms` | `lista_vip` | `msg_<n>` | `<evento>-sms` |
+
+**SMS entra sempre, nas duas fases** — captação e vendas. É o canal mais fácil
+de esquecer porque quem dispara costuma ser outra pessoa (GrowAI ou operadora),
+e o link chega pronto de algum lugar; sem UTM própria o SMS inteiro cai como
+tráfego direto e o relatório credita o canal errado.
+
+O SMS tem um agravante sobre os outros canais: **a mensagem é curta e o link é
+quase todo o corpo dela**, então URL longa com UTM colada é impraticável — o
+short link não é conveniência, é requisito. Gere-o mesmo quando o disparo ainda
+não estiver contratado.
+
+O sufixo de fase segue o que o lançamento já usa (`-oferta` é o padrão; alguns
+lançamentos usam `-vendas`). Precedente validado: `wotf-sms` (Kleber, WOTF
+ago/26) e os seis links de agosto/26 — Daniela (`clareamento-sms`), Letícia
+(`onco-laser-sms`) e Elen (`estomato-laser-sms`), cada um com o par de vendas.
+
 ## Tráfego pago (macros — ver utm-taxonomy.md)
 
 | Canal | slug | onde colar |
@@ -79,9 +102,11 @@ reprovado na revisão e atrapalha a checagem de domínio.
 | Ativo | Tratamento | slug |
 |---|---|---|
 | Pesquisa (Typebot) | UTM do canal que distribui a pesquisa | `<evento>-pesquisa` |
+| Pesquisa pós-evento (certificado) | UTM do canal que distribui | `<evento>-pesquisa-pos` |
 | E-book / isca | UTM do canal que distribui | `<evento>-ebook` |
 | Página de vendas | UTM por canal, quando abrir | `<evento>-vendas` |
 | Checkout | sem UTM (a plataforma tem a sua) | `<evento>-checkout` |
 | Grupo de WhatsApp | sem UTM (roteador SendFlow) | `<evento>-grupo` |
 | Suporte do evento | `/suporte?m=<mensagem>` | `<evento>-suporte` |
+| Time de vendas (comercial) | `/comercial?m=<mensagem de matrícula>` — ver Passo 3b do SKILL.md | `<evento>-atendimento` |
 | Zoom / sala do evento | sem UTM | `<evento>-zoom` |

@@ -4,7 +4,7 @@ Animações desenhadas à mão em SVG raramente ficam tão boas quanto **PNGs/SV
 
 ## 1. Banco local de PNGs (prioritário)
 
-**Caminho:** `/Users/gabriel/Documents/PNGS PARA EDICAO/`
+**Caminho:** `$PNG_ROOT/`
 
 **Como usar:**
 1. Leia `INDEX.md` (catálogo scanável de todos os ícones com `id`, descrição, tags, mood, casos de uso).
@@ -16,7 +16,7 @@ Animações desenhadas à mão em SVG raramente ficam tão boas quanto **PNGs/SV
 **Workflow no Remotion:**
 ```bash
 # Copiar PNG escolhido pro projeto
-cp "/Users/gabriel/Documents/PNGS PARA EDICAO/<categoria>/<id>.png" \
+cp "$PNG_ROOT/<categoria>/<id>.png" \
    "<remotion_dir>/public/icons/<id>.png"
 ```
 

@@ -67,6 +67,26 @@ def build_url(destination: str, utm: dict, campaign: str) -> str:
     return f"{destination}{sep}{'&'.join(params)}"
 
 
+def md_link(url: str) -> str:
+    """`[url](url)` — link de verdade na Central, não texto que parece link.
+
+    URL solta num PUT do ClickUp entra como **texto puro**: no editor ela sai
+    preta e não clicável, e ninguém percebe pela API, porque o export
+    `content_format=text/md` renderiza QUALQUER URL como `[url](url)` — o
+    Markdown de volta parece certo mesmo quando o doc está errado. Só a
+    sintaxe explícita no PUT garante o anchor.
+
+    O texto visível continua sendo a própria URL (padrão Daniela da Central,
+    `rótulo: link`); o que muda é existir destino.
+
+    Nada de destino entre `<>`: as URLs aqui não têm espaço nem parêntese, e o
+    parser do ClickUp não trata a forma com colchete angular de maneira
+    confiável. As macros de anúncio (`{{campaign.name}}`, `{keyword}`) passam
+    intactas dentro dos parênteses — chave não é caractere especial de link.
+    """
+    return f"[{url}]({url})"
+
+
 def shorten(api_base: str, api_key: str, long_url: str, slug: str,
             tags: list[str]) -> tuple[str | None, str]:
     """Cria o short link. Devolve (short_url, status).
@@ -176,13 +196,13 @@ def main() -> int:
     for label, short, url, is_ad in rows:
         if is_ad:
             continue
-        print(f"*   {label}: {short or url}")
+        print(f"*   {label}: {md_link(short or url)}")
 
     ads = [r for r in rows if r[3]]
     if ads:
         print("\n**Parâmetros de URL para colar na plataforma de anúncio**\n")
         for label, _short, url, _ in ads:
-            print(f"*   {label}: {url}")
+            print(f"*   {label}: {md_link(url)}")
 
     json.dump(summary, sys.stderr, ensure_ascii=False, indent=2)
     print(file=sys.stderr)

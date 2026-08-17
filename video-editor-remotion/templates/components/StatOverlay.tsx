@@ -70,11 +70,15 @@ const StatInner: React.FC<{
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
   );
 
+  // Auto-fit the number so long stats ("25 ANOS", "~3.000") don't overflow width.
+  const fittedSize = Math.min(320, Math.round(1000 / (Math.max(3, text.length) * 0.6)));
+
   return (
     <AbsoluteFill
       style={{
-        justifyContent: "center",
+        justifyContent: "flex-start",
         alignItems: "center",
+        paddingTop: "17%",
         opacity: fadeOut,
       }}
     >
@@ -84,14 +88,32 @@ const StatInner: React.FC<{
           textAlign: "center",
         }}
       >
+        {subtext ? (
+          <div
+            style={{
+              marginBottom: 10,
+              fontFamily,
+              fontWeight: 800,
+              fontSize: 46,
+              color: brandColors.normal,
+              WebkitTextStroke: `6px ${brandColors.stroke}`,
+              paintOrder: "stroke fill",
+              textTransform: "uppercase",
+              letterSpacing: "0.14em",
+              opacity: 0.92,
+            }}
+          >
+            {subtext}
+          </div>
+        ) : null}
         <div
           style={{
             fontFamily,
             fontWeight: 900,
-            fontSize: 360,
+            fontSize: fittedSize,
             lineHeight: 1,
             color: brandColors.keyword,
-            WebkitTextStroke: `16px ${brandColors.stroke}`,
+            WebkitTextStroke: `10px ${brandColors.stroke}`,
             paintOrder: "stroke fill",
             textShadow: "0 12px 32px rgba(0,0,0,0.55)",
             letterSpacing: "-0.02em",
@@ -99,23 +121,6 @@ const StatInner: React.FC<{
         >
           {text}
         </div>
-        {subtext ? (
-          <div
-            style={{
-              marginTop: 24,
-              fontFamily,
-              fontWeight: 800,
-              fontSize: 64,
-              color: brandColors.normal,
-              WebkitTextStroke: `8px ${brandColors.stroke}`,
-              paintOrder: "stroke fill",
-              textTransform: "uppercase",
-              letterSpacing: "0.02em",
-            }}
-          >
-            {subtext}
-          </div>
-        ) : null}
       </div>
     </AbsoluteFill>
   );

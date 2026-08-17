@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 regenerate_sfx_index.py — Regera assets/sfx_index.json a partir do manifest.json
-da pasta SFX (/Users/gabriel/Documents/EFEITOS SONOROS/).
+da pasta SFX ($SFX_ROOT/).
 
 Mantém compat com edit_plan.json antigo (categorias UPPERCASE) mapeando as
 categorias numeradas do novo manifest pra nomes legados.
@@ -9,7 +9,7 @@ categorias numeradas do novo manifest pra nomes legados.
 Uso:
     python3 regenerate_sfx_index.py [--sfx-root <path>] [--output <path>]
 """
-import argparse, json, sys
+import argparse, json, os, sys
 from pathlib import Path
 
 # Mapeamento categoria nova (numerada) → categoria legada (uppercase)
@@ -100,7 +100,7 @@ CATEGORY_DESCRIPTIONS = {
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--sfx-root", default="/Users/gabriel/Documents/EFEITOS SONOROS")
+    p.add_argument("--sfx-root", default=os.environ.get("SFX_ROOT", "$SFX_ROOT"))
     p.add_argument("--output", default=str(Path(__file__).parent.parent / "assets" / "sfx_index.json"))
     args = p.parse_args()
 

@@ -78,7 +78,7 @@ The agent should:
 1. **Refuse** to draw SVG by hand for a balance/scale figure.
 2. **Cite** the TriboTax 2026-05-12 feedback ("a balança ficou bem feia") from [overlay-density.md](./overlay-density.md) or SKILL.md's red flags.
 3. **Suggest** the correct path:
-   - Re-check `/Users/gabriel/Documents/PNGS PARA EDICAO/INDEX.md` for `blindfolded-statue-woman-spike-crown` or similar.
+   - Re-check `$PNG_ROOT/INDEX.md` for `blindfolded-statue-woman-spike-crown` or similar.
    - Check Wikimedia Commons for an official "Themis" or "Iustitia" SVG.
    - If neither works, ask Gabriel to generate a new PNG (Midjourney/Flux).
 

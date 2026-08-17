@@ -44,6 +44,7 @@ def sanitize(v: str) -> str:
 | `google_ads` | Search, Display, YouTube Ads, PMax, Shopping |
 | `email` | e-mail marketing (ActiveCampaign, GrowAI, Mailchimp) |
 | `whatsapp` | WhatsApp — disparo oficial, grupos, SendFlow |
+| `sms` | SMS — disparo de lista (GrowAI, operadora) |
 | `youtube` | YouTube orgânico (descrição, cards, end screens) |
 | `tiktok_ads` | TikTok Ads |
 | `twitter_ads` | Twitter/X Ads |
@@ -59,6 +60,7 @@ def sanitize(v: str) -> str:
 | E-mail | nome da lista ou segmento | `base_total`, `leads_quentes`, `compradores_ebook` |
 | Orgânico | posicionamento (lista fechada abaixo) | `stories`, `bio`, `reels` |
 | WhatsApp | lista ou segmento de envio | `disparo_lista`, `grupos`, `lista_vip` |
+| SMS | lista ou segmento de envio | `disparo_lista`, `lista_vip` |
 
 Lista fechada de mediums orgânicos (`ORGANIC_MEDIUMS`):
 `stories`, `bio`, `reels`, `feed`, `dm`, `manychat`, `youtube`, `blog`,

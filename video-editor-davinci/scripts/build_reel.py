@@ -53,6 +53,78 @@ def run_phase(label: str, cmd: list[str]) -> None:
         sys.exit(f"❌ {label} failed (exit {result.returncode})")
 
 
+def run_montage(args, input_dir: Path, name: str) -> None:
+    """Visual-driven montage path: analyze_visual → plan_montage → build_timeline.
+    Bypasses transcribe/plan_edit entirely — those are speech-driven and don't
+    apply to a B-roll montage with no narration to cut around."""
+    brand_config_path, client_root = find_brand_config(input_dir)
+    if brand_config_path:
+        print(f"📋 Brand config: {brand_config_path}")
+        print(f"📂 Client root: {client_root}")
+        output_dir = client_root / "output" / name
+    else:
+        # Montage mode doesn't need brand captions/compliance rules — don't
+        # force a .video-editor.json to exist just to pick a project folder.
+        print("📋 No .video-editor.json found — proceeding without one (montage mode)")
+        output_dir = input_dir / "output" / name
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    candidates_path = output_dir / "visual_candidates.json"
+    plan_path = output_dir / "edit_plan.json"
+
+    if not args.skip_transcribe:  # reused flag name: skip the analyze phase
+        cmd = [
+            sys.executable, str(SCRIPT_DIR / "analyze_visual.py"),
+            "--input", str(input_dir),
+            "--output", str(candidates_path),
+        ]
+        if args.only:
+            cmd.extend(["--only", args.only])
+        if args.vision:
+            cmd.append("--vision")
+        run_phase("Phase 1/3: Analyze visual", cmd)
+    elif not candidates_path.exists():
+        sys.exit(f"❌ --skip-transcribe but {candidates_path} doesn't exist")
+
+    if not args.skip_plan:
+        cmd = [
+            sys.executable, str(SCRIPT_DIR / "plan_montage.py"),
+            "--candidates", str(candidates_path),
+            "--target-duration", str(args.target_duration),
+            "--name", name,
+            "--output", str(plan_path),
+        ]
+        if args.music:
+            cmd.extend(["--music", str(args.music)])
+        if args.no_speed:
+            cmd.append("--no-speed")
+        if args.vision:  # only meaningful alongside --vision candidates
+            cmd.append("--reorder")
+        if args.max_per_tag is not None:
+            cmd.extend(["--max-per-tag", str(args.max_per_tag)])
+        run_phase("Phase 2/3: Plan montage", cmd)
+    elif not plan_path.exists():
+        sys.exit(f"❌ --skip-plan but {plan_path} doesn't exist")
+
+    if not args.skip_build:
+        cmd = [
+            sys.executable, str(SCRIPT_DIR / "build_timeline.py"),
+            "--plan", str(plan_path),
+            "--clips-dir", str(input_dir),
+            "--project-name", name,
+        ]
+        if brand_config_path:
+            cmd.extend(["--brand-config", str(brand_config_path)])
+        run_phase("Phase 3/3: Build timeline (DaVinci)", cmd)
+
+    plan = json.loads(plan_path.read_text())
+    print(f"\n✅ Done. Output: {output_dir}")
+    print(f"   Project '{name}' is in DaVinci Resolve Project Manager")
+    print(f"   Plan: {len(plan['v1_main'])} shots, ~{plan['duration_target_seconds']}s"
+          f"{' + music' if plan.get('music') else ''}")
+    print(f"\n   To iterate: edit {plan_path} and re-run with --skip-transcribe --skip-plan")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--input", required=True, type=Path, help="Directory with clips")
@@ -67,6 +139,13 @@ def main():
     ap.add_argument("--skip-transcribe", action="store_true")
     ap.add_argument("--skip-plan", action="store_true")
     ap.add_argument("--skip-build", action="store_true")
+    ap.add_argument("--montage", action="store_true",
+                    help="Visual-driven montage mode (no speech/roteiro) — analyze_visual + plan_montage instead of transcribe + plan_edit")
+    ap.add_argument("--music", type=Path, help="[--montage] Music bed (.mp3/.wav) to beat-sync cuts to")
+    ap.add_argument("--vision", action="store_true", help="[--montage] Enable Claude Vision shot scoring + LLM reorder")
+    ap.add_argument("--no-speed", action="store_true", help="[--montage] Skip speed-ramp hero shots")
+    ap.add_argument("--only", help="[--montage] Restrict analysis to a single clip filename (smoke test)")
+    ap.add_argument("--max-per-tag", type=int, help="[--montage] Cap selected shots sharing any one tag (diversity)")
     args = ap.parse_args()
 
     input_dir: Path = args.input.expanduser().resolve()
@@ -74,6 +153,10 @@ def main():
         sys.exit(f"❌ Input dir not found: {input_dir}")
 
     name = args.name or input_dir.name.replace(" ", "_").lower()
+
+    if args.montage:
+        run_montage(args, input_dir, name)
+        return
 
     brand_config_path, client_root = find_brand_config(input_dir)
     if not brand_config_path:

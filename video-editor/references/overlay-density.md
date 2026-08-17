@@ -30,7 +30,7 @@ Se (1) banco local e (2) Wikimedia/bibliotecas não cobrem o visual desejado, **
 > "Para o overlay X precisamos de uma imagem de [descrição detalhada — estilo, composição, fundo preferido escuro ou branco, elementos principais]. Você consegue gerar?"
 
 Gabriel usa ferramentas de geração de imagem (Midjourney, Flux, etc.). Os PNGs gerados devem:
-- Ir para `/Users/gabriel/Documents/PNGS PARA EDICAO/<categoria>/`
+- Ir para `$PNG_ROOT/<categoria>/`
 - Ser copiados para `<remotion>/public/icons/`
 - Ser documentados no `INDEX.md`
 
@@ -38,7 +38,7 @@ Gabriel usa ferramentas de geração de imagem (Midjourney, Flux, etc.). Os PNGs
 
 **Antes de QUALQUER `rich_overlay` que envolva figura/ícone/objeto reconhecível, siga esta ordem rígida:**
 
-1. **PNG local primeiro** — `/Users/gabriel/Documents/PNGS PARA EDICAO/` (232 ícones, 9 categorias). Ler `INDEX.md` integralmente. Buscar por keywords semânticas (`balanca`, `justi`, `estatua`, `busto`, `dinheiro`, `doc`, `mao`). Copiar pra `<remotion>/public/icons/` e usar via `<Img src={staticFile('icons/<id>.png')} />`.
+1. **PNG local primeiro** — `$PNG_ROOT/` (232 ícones, 9 categorias). Ler `INDEX.md` integralmente. Buscar por keywords semânticas (`balanca`, `justi`, `estatua`, `busto`, `dinheiro`, `doc`, `mao`). Copiar pra `<remotion>/public/icons/` e usar via `<Img src={staticFile('icons/<id>.png')} />`.
 
 2. **Wikimedia Commons + bibliotecas SVG** — Brasões/bandeiras/símbolos oficiais via Wikimedia (PD/CC). Ícones genéricos via heroicons/lucide/tabler/svgrepo. Use `WebFetch`.
 

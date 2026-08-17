@@ -62,8 +62,22 @@ def get_or_create_project(resolve, name: str, folder: str | None = None):
     if pm is None:
         raise ResolveError("ProjectManager unavailable")
 
+    # Check the CURRENT project by name before anything else. A project a
+    # prior run created but crashed before SaveProject() stays open as the
+    # "current project" without ever appearing in GetProjectListInCurrentFolder()
+    # — and Resolve then refuses CreateProject/LoadProject for ANYTHING while
+    # that unsaved project is current (both return None, indistinguishable from
+    # a real failure unless you check this first).
+    current = pm.GetCurrentProject()
+    if current and current.GetName() == name:
+        return current
+
+    # Always anchor to root first — Project Manager navigation is stateful in
+    # the live app (e.g. the user browsing folders between script runs), so
+    # without this, GetProjectListInCurrentFolder()/CreateProject() below would
+    # silently operate on whatever folder the UI happens to be sitting in.
+    pm.GotoRootFolder()
     if folder:
-        pm.GotoRootFolder()
         existing_folders = _values(pm.GetFoldersInCurrentFolder())
         if folder not in existing_folders:
             if not pm.CreateFolder(folder):
@@ -73,10 +87,6 @@ def get_or_create_project(resolve, name: str, folder: str | None = None):
 
     existing = _values(pm.GetProjectListInCurrentFolder())
     if name in existing:
-        # If it's already the current project, no need to LoadProject
-        current = pm.GetCurrentProject()
-        if current and current.GetName() == name:
-            return current
         project = pm.LoadProject(name)
         if project is None:
             raise ResolveError(f"Found project '{name}' but failed to load")
@@ -84,7 +94,10 @@ def get_or_create_project(resolve, name: str, folder: str | None = None):
 
     project = pm.CreateProject(name)
     if project is None:
-        raise ResolveError(f"Failed to create project '{name}'")
+        raise ResolveError(
+            f"Failed to create project '{name}' — if another unsaved project is "
+            "currently open in Resolve, save or close it first"
+        )
     # Brief pause: MediaPool needs a moment after a new project is created
     time.sleep(0.5)
     return project
@@ -168,11 +181,17 @@ def append_clip_with_in_out(
     media_out_seconds: float,
     track_index: int = 1,
     timeline_start_frame: int | None = None,
+    media_type: int | None = None,
 ):
     """Append a single clip with explicit in/out (in source seconds) to a track.
 
     Resolve's AppendToTimeline accepts a list of dicts with frame-based in/out:
       {"mediaPoolItem": item, "startFrame": N, "endFrame": M, "trackIndex": k, ...}
+
+    `media_type`: optional 1 (video only) / 2 (audio only), per the README's
+    documented clipInfo dict. Pass 1 when you intend to place a SEPARATE,
+    independently-processed audio clip for this same source/range (e.g. a
+    ducked segment) instead of Resolve's default auto-linked embedded audio.
 
     Returns the appended TimelineItem (last item on the target track).
     """
@@ -188,6 +207,8 @@ def append_clip_with_in_out(
     }
     if timeline_start_frame is not None:
         payload["recordFrame"] = timeline_start_frame
+    if media_type is not None:
+        payload["mediaType"] = media_type
 
     mp = project.GetMediaPool()
     if not mp.AppendToTimeline([payload]):
@@ -198,6 +219,49 @@ def append_clip_with_in_out(
 
     timeline = project.GetCurrentTimeline()
     items = timeline.GetItemListInTrack("video", track_index) or []
+    return items[-1] if items else None
+
+
+def append_audio_with_in_out(
+    project,
+    media_pool_item,
+    *,
+    media_in_seconds: float,
+    media_out_seconds: float,
+    track_index: int,
+    fps: float,
+    timeline_start_frame: int | None = None,
+):
+    """Sibling of append_clip_with_in_out for an AUDIO-ONLY clip (e.g. a music
+    bed): sets mediaType=2 so AppendToTimeline places only the audio stream.
+
+    Unlike append_clip_with_in_out, `fps` is taken explicitly (the TIMELINE's
+    frame rate) rather than read from MediaPoolItem.GetClipProperty("FPS") —
+    audio-only files (mp3/wav) don't reliably carry a meaningful FPS clip
+    property, and getting this wrong would silently mis-time the whole music bed.
+    """
+    start_frame = int(round(media_in_seconds * fps))
+    end_frame = int(round(media_out_seconds * fps))
+
+    payload: dict[str, Any] = {
+        "mediaPoolItem": media_pool_item,
+        "startFrame": start_frame,
+        "endFrame": end_frame,
+        "trackIndex": track_index,
+        "mediaType": 2,
+    }
+    if timeline_start_frame is not None:
+        payload["recordFrame"] = timeline_start_frame
+
+    mp = project.GetMediaPool()
+    if not mp.AppendToTimeline([payload]):
+        raise ResolveError(
+            f"AppendToTimeline (audio) failed for {media_pool_item.GetName()} "
+            f"({media_in_seconds:.2f}s → {media_out_seconds:.2f}s)"
+        )
+
+    timeline = project.GetCurrentTimeline()
+    items = timeline.GetItemListInTrack("audio", track_index) or []
     return items[-1] if items else None
 
 

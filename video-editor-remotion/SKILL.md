@@ -245,6 +245,6 @@ Remotion-package-backed: `TransitionScene`, `AudioWaveform`, `LottieScene`, `Riv
 
 ## SFX library quick map
 
-Same library as parent skill: 26 categories at `/Users/gabriel/Documents/EFEITOS SONOROS/`, indexed in `assets/sfx_index.json`. **Use legacy UPPERCASE names in `edit_plan.json`**: `WOOSH`, `CLICK`, `DIGITAL`, `TRANSIÇÃO`, `CAMERA`, `PLIM`, `RISER`, `VARIAVEIS`, `AMBIENTE`, `CINEMATICA`, `ROLAGEM`, `GLITCH`, `TECLADO`, `DINHEIRO`, `ESTALO`, `CONTAGEM`, `POPS`, `BOOM`, `NOTIFICATION`, `DRUM`, `GLASS_BREAK`, `APPLAUSE`, `HORROR`, `FAIL`, `MAGIC`, `HEARTBEAT`.
+Same library as parent skill: 26 categories at `$SFX_ROOT/`, indexed in `assets/sfx_index.json`. **Use legacy UPPERCASE names in `edit_plan.json`**: `WOOSH`, `CLICK`, `DIGITAL`, `TRANSIÇÃO`, `CAMERA`, `PLIM`, `RISER`, `VARIAVEIS`, `AMBIENTE`, `CINEMATICA`, `ROLAGEM`, `GLITCH`, `TECLADO`, `DINHEIRO`, `ESTALO`, `CONTAGEM`, `POPS`, `BOOM`, `NOTIFICATION`, `DRUM`, `GLASS_BREAK`, `APPLAUSE`, `HORROR`, `FAIL`, `MAGIC`, `HEARTBEAT`.
 
 In this fork, SFX play via `<Audio>` tracks inside `Reel.tsx` — described above in [SFX in Remotion](#sfx-in-remotion-key-difference-from-capcut-sibling).

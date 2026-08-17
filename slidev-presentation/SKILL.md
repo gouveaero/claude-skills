@@ -194,13 +194,19 @@ Se o usuário pediu deploy:
 
 Detalhes do fluxo em `references/deploy.md`. Setup único do hub em `references/setup-hub.md`.
 
+**Modo sincronizado (apresentador multi-dispositivo):** todo deck novo já nasce com um botão ⇄ (canto inf. dir.) que permite **controlar de um dispositivo e exibir em outro** (tablet em `/presenter/` controla + PC projeta), funcionando no deck **estático publicado** via um relay WebSocket próprio (`wss://slides-sync.gabrielgouvea.com.br`). É aditivo (`templates/global-top.vue` + `templates/components/SyncController.vue`) e não conflita com o backdrop customizado (que vai no `global-bottom.vue`). Ver `references/sync-mode.md`.
+
 ---
 
 ## Feature surface — sempre consulte antes de gerar
 
 Slidev oferece muito mais que `v-click` + Shiki. Para qualquer slide, primeiro avalie se uma feature mais expressiva cabe.
 
-**Versão atual** (set/2024 → mai/2026): mudanças em v0.48+ (sistema de clicks reescrito, presets nomeados, alerts nativos, `comark:` renamed de `mdc:`) estão em `references/v52-features.md`. **Sempre consulte** antes de gerar — features ali são frequentemente as que distinguem uma deck cinematográfica de uma deck plana.
+**⚠ Versão do Slidev fixada em `0.50.0` (NÃO bumpar para 52.x).** O template fixa `@slidev/cli@0.50.0` + temas `@0.25.0` de propósito. As versões 52.x (incl. a `latest` atual, 52.16.0) têm um bug em `getSlidePath` que **prefixa `import.meta.env.BASE_URL` no caminho da rota** enquanto as rotas são registradas sem base (`/:no`). Como o hub serve cada deck em subpath (`slides.gabrielgouvea.com.br/<slug>/`), `--base /<slug>/` faz a navegação client-side duplicar o base (`/<slug>/<slug>/2` → quebra o slide). Em modo `hash` o mesmo bug dá 404. O load direto de cada slide funciona, então o sintoma só aparece ao clicar/avançar. `0.50.0` (a versão dos 7 decks já no hub) não tem esse bug. Se algum dia quiser 52.x, só com patch de `node_modules/@slidev/client/logic/slides.ts` (via patch-package) — não basta trocar a versão.
+
+**Nota de headmatter**: em `0.50.0` a chave MDC é `mdc: true` (o `comark:` só existe em v52.14+). O `lint-deck.mjs` pode emitir WARN sugerindo `comark:` — ignore enquanto estivermos em `0.50.0`.
+
+**Versão atual** (set/2024 → mai/2026): mudanças em v0.48+ (sistema de clicks reescrito, presets nomeados, alerts nativos, `comark:` renamed de `mdc:`) estão em `references/v52-features.md`. Note que features marcadas **v52+** (alerts `> [!NOTE]`, `<BlueSky>`, `comark:`) NÃO funcionam na 0.50.0 fixada — use as alternativas clássicas (callout via `<div>`/componente, `mdc:`).
 
 **Design quality (LEIA ANTES DE ESCREVER SLIDES.md)**: `references/design-quality.md` — princípios curados de UI/UX adaptados para deck (register brand/product, color strategy 4 níveis, tipografia em slides, banimentos absolutos, AI slop test, checklist Phase 4). Os checks objetivos rodam automaticamente em Phase 4.5, mas os subjetivos (color strategy, hierarquia, AI slop) só você consegue julgar — interna-los antes de escrever evita iterações.
 

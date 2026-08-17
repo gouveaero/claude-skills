@@ -291,7 +291,7 @@ def main():
         "6. Só ENTÃO apresente o proxy ao humano.\n",
         "## RECURSOS DE ÍCONES — REGRA DURA (não negociável)\n",
         "**NUNCA desenhe figura/objeto/ícone reconhecível em SVG na mão. Sempre nessa ordem:**\n",
-        "1. **PRIMEIRO — banco PNG local** (`/Users/gabriel/Documents/PNGS PARA EDICAO/`)",
+        "1. **PRIMEIRO — banco PNG local** (`$PNG_ROOT/`)",
         "   - LEIA `INDEX.md` integralmente (226 ícones, 8 categorias) antes de pensar em SVG.",
         "   - Busca por keywords semânticas: 'balanca', 'justi', 'estatua', 'busto', 'dinheiro', 'doc', 'mao'.",
         "   - Copie pra `<remotion>/public/icons/` e use `<Img src={staticFile('icons/<id>.png')} />`.",

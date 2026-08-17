@@ -179,6 +179,50 @@ def ensure_components(remotion_dir: Path, templates_dir: Path) -> None:
     for f in src.iterdir():
         if f.suffix in {".ts", ".tsx"}:
             shutil.copy2(f, src_components / f.name)
+    # Copy nested component subdirs (e.g. snippets/) — iterdir() above is non-recursive,
+    # which previously left snippets/* unresolved and broke the webpack bundle.
+    for sub in src.iterdir():
+        if sub.is_dir():
+            dst_sub = src_components / sub.name
+            dst_sub.mkdir(parents=True, exist_ok=True)
+            for f in sub.iterdir():
+                if f.suffix in {".ts", ".tsx"}:
+                    shutil.copy2(f, dst_sub / f.name)
+
+
+def prune_richoverlays_if_unused(src_dir: Path, plan: dict) -> None:
+    """Reel.tsx always imports RichOverlays, which pulls @remotion/lottie|rive|three.
+    Those are only installed when the plan uses the matching rich_overlay kinds. When
+    the plan has no rich_overlays, strip the import + render block and drop the heavy
+    component files so the bundle resolves without the optional packages."""
+    if plan.get("rich_overlays"):
+        return
+    reel = src_dir / "Reel.tsx"
+    if not reel.exists():
+        return
+    t = reel.read_text()
+    t = t.replace('import { RichOverlayRenderer, RichOverlayDef } from "./components/RichOverlays";\n', "")
+    t = t.replace("  rich_overlays?: RichOverlayDef[];\n", "  rich_overlays?: any[];\n")
+    block = (
+        "      {/* ── Rich overlays — director-level animations driven by plan.rich_overlays[] */}\n"
+        "      {(plan.rich_overlays ?? []).map((overlay, i) => {\n"
+        "        const startFrame = Math.round(overlay.start * fps);\n"
+        "        const endFrame = Math.round(overlay.end * fps);\n"
+        "        const durationFrames = Math.max(1, endFrame - startFrame);\n"
+        "        return (\n"
+        "          <Series.Sequence key={`rich-${i}`} from={startFrame} durationInFrames={durationFrames} layout=\"none\">\n"
+        "            <RichOverlayRenderer overlay={overlay} fps={fps} />\n"
+        "          </Series.Sequence>\n"
+        "        );\n"
+        "      })}\n"
+    )
+    t = t.replace(block, "")
+    reel.write_text(t)
+    for name in ("RichOverlays.tsx", "LottieScene.tsx", "RiveScene.tsx", "ThreeReveal.tsx", "MotionBlurOverlay.tsx"):
+        p = src_dir / "components" / name
+        if p.exists():
+            p.unlink()
+    print("  Pruned unused RichOverlays + heavy optional components (plan has no rich_overlays)")
 
 
 # Optional packages — installed only when the plan references the corresponding overlay kind.
@@ -513,6 +557,7 @@ def main():
         )
         (src_dir / "Reel.tsx").write_text(reel_tsx)
         print(f"  Wrote src/Reel.tsx")
+        prune_richoverlays_if_unused(src_dir, plan)
     else:
         print(f"  [WARN] Reel.tsx.tmpl not found in {templates_dir} — skipping Reel.tsx")
 

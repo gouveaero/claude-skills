@@ -84,14 +84,22 @@ const items = decks.length === 0
 
 // Replace block in index.html
 const indexHtml = readFileSync(indexPath, 'utf8')
+const blockRe = /<ul id="decks">[\s\S]*?<\/ul>/
+
+// Distinguir "bloco ausente" (erro real) de "nada mudou" (re-deploy do mesmo deck).
+if (!blockRe.test(indexHtml)) {
+  console.error('Could not locate <ul id="decks">...</ul> block in index.html — file structure changed?')
+  process.exit(2)
+}
+
 const newHtml = indexHtml.replace(
-  /<ul id="decks">[\s\S]*?<\/ul>/,
+  blockRe,
   `<ul id="decks">\n${items}\n  </ul>`,
 )
 
 if (newHtml === indexHtml) {
-  console.error('Could not locate <ul id="decks">...</ul> block in index.html — file structure changed?')
-  process.exit(2)
+  console.log(`✓ index.html já está atualizado (${decks.length} deck${decks.length === 1 ? '' : 's'}) — nada a fazer.`)
+  process.exit(0)
 }
 
 writeFileSync(indexPath, newHtml)

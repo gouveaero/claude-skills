@@ -67,15 +67,26 @@ Toda criação DEVE passar nesse regex antes de ser submetida à API.
 
 ### `[FASE]` — estágio do funil
 
-| Fase | Código | Objetivo Meta típico |
-|------|--------|---------------------|
-| Captação/topo | `CAPT` | OUTCOME_LEADS, OUTCOME_TRAFFIC |
-| Aquecimento/meio | `AQUEC` | OUTCOME_ENGAGEMENT |
-| Venda/carrinho | `VENDA` | OUTCOME_SALES |
-| Retargeting | `RETAR` | OUTCOME_SALES, OUTCOME_LEADS |
-| Upsell | `UPSELL` | OUTCOME_SALES |
-| Recovery | `RECOV` | OUTCOME_SALES |
-| Awareness (branding) | `AWARE` | OUTCOME_AWARENESS |
+⚠️ **Estes são os marcadores que o Dashboard Exos LÊ do nome** (12/08/2026 — a tabela
+antiga `CAPT`/`AQUEC`/`RETAR`/`RECOV` divergia da produção e o dash não a reconhecia).
+Referência viva: https://dash.exosmkt.com/convencoes
+
+| Fase | Marcador aceito | Objetivo Meta típico |
+|------|-----------------|---------------------|
+| Captação/topo | `CADASTROS` / `CADASTRO` / `CAPTACAO` / `CAP` | OUTCOME_LEADS, OUTCOME_TRAFFIC |
+| Contagem regressiva | frase `CONTAGEM REGRESSIVA` no texto livre | OUTCOME_AWARENESS |
+| Venda/carrinho | `VENDAS` / `VENDA` / `VENDAS DO EVENTO` / `OFERTA` | OUTCOME_SALES |
+| Carrinho aberto | `CARRINHO` ou a frase "carrinho aberto" | OUTCOME_SALES |
+| Evento ao vivo | `EVENTO` / `AULA` / `AO VIVO` | OUTCOME_AWARENESS |
+| Pesquisa pós-evento | `PESQUISA` | OUTCOME_ENGAGEMENT |
+| Downsell | `DOWNSELL` | OUTCOME_SALES |
+| Recuperação | `RECUPERACAO` / `REABERTURA` | OUTCOME_SALES |
+
+Regras do leitor: um marcador por campanha (dois de fases diferentes anulam);
+`[RECONHECIMENTO]` sozinho NÃO é fase; posição = antes do código do cliente ou
+depois do ano, nunca entre os dois (quebra a identidade do projeto). O `[PGL]`
+prefixo e texto livre após a tag são aceitos — o regex estrito abaixo é o ideal
+de criação, não o que o parser exige.
 
 ---
 

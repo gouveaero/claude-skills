@@ -22,7 +22,7 @@ Causa #1 de decks que quebram em deploy: caminho absoluto numa `<img src="/foo.p
 
 ```md
 <!-- ❌ NÃO faça isso (path absoluto local) -->
-<img src="/Users/gabriel/Pictures/logo.png" />
+<img src="./public/logo.png" />
 
 <!-- ❌ NÃO faça isso (path relativo subindo diretórios) -->
 <img src="../../../assets/logo.png" />

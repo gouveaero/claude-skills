@@ -119,7 +119,7 @@ ffprobe -show_entries stream=color_range,color_space,color_primaries,color_trans
 
 **Causa:** uma track de vídeo no CapCut só aceita segmentos sequenciais, não simultâneos. Plan declara overlays simultâneos por design (background + foreground).
 
-**Fix:** [capcut_draft_builder.py:330-365](/Users/gabriel/.claude/skills/video-editor/scripts/capcut_draft_builder.py#L330-L365) — greedy track assignment cria `overlays_alpha_v2`, `overlays_alpha_v3`, `overlays_alpha_v4`... conforme necessário. Cada overlay vai pra primeira track livre no seu range temporal.
+**Fix:** [capcut_draft_builder.py:330-365](../scripts/capcut_draft_builder.py#L330-L365) — greedy track assignment cria `overlays_alpha_v2`, `overlays_alpha_v3`, `overlays_alpha_v4`... conforme necessário. Cada overlay vai pra primeira track livre no seu range temporal.
 
 **Também:** `script.add_segment(seg, track_name="overlays_alpha_v2")` — quando há múltiplas tracks do mesmo tipo, o nome é obrigatório.
 

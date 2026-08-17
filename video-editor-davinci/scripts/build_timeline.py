@@ -35,6 +35,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from resolve_helpers import (  # noqa: E402
     SCALE_FILL,
     ResolveError,
+    append_audio_with_in_out,
     append_clip_with_in_out,
     apply_cdl,
     configure_project,
@@ -135,6 +136,164 @@ def _import_via_tmp(mp, src_path: Path, tmp_root: Path):
     if not dst.exists() or dst.stat().st_size != src_path.stat().st_size:
         shutil.copy2(src_path, dst)
     return mp.ImportMedia([str(dst)])
+
+
+def prerender_speed_clips(plan: dict, clips_dir: Path, cache_dir: Path) -> None:
+    """Pre-render speed-ramped hero shots via ffmpeg and repoint the plan at them.
+
+    DaVinci's scripting API has no exposed clip-speed/retime property: the
+    official README's TimelineItem:SetProperty key list has `RetimeProcess` and
+    `MotionEstimation`, but those only tune the interpolation QUALITY of a
+    retime that already exists — there's no key to CREATE one, and there's no
+    `ChangeClipSpeed` method anywhere in the API. So speed ramps for montage
+    'hero shots' are done by pre-rendering a sped-up/slowed-down copy with
+    ffmpeg and swapping the plan entry to point at it (same category of
+    workaround as prerender_audio_duck below for the same underlying reason:
+    the thing we need isn't scriptable, so we do it before Resolve gets involved).
+
+    Mutates plan['v1_main'] in place: any cut with speed != 1.0 gets its 'clip'
+    rewritten to an absolute path, with 'source_in'/'source_out' reset to
+    0/new_duration (the whole pre-rendered file IS the trimmed shot).
+    """
+    import subprocess
+
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    for cut in plan["v1_main"]:
+        speed = float(cut.get("speed", 1.0))
+        if speed == 1.0:
+            continue
+
+        src = Path(cut["clip"])
+        if not src.is_absolute():
+            src = clips_dir / src
+        in_s, out_s = float(cut["source_in"]), float(cut["source_out"])
+        orig_dur = out_s - in_s
+        if orig_dur <= 0:
+            continue
+        new_dur = orig_dur / speed
+
+        tag = f"{speed:g}".replace(".", "p").replace("-", "m")
+        out_path = cache_dir / f"{src.stem}_{in_s:.2f}_{out_s:.2f}_x{tag}.mov"
+        if not (out_path.exists() and out_path.stat().st_size > 0):
+            vf = f"setpts=PTS/{speed}"
+            if speed < 0.5:
+                # Optical-flow interpolation avoids judder on deep slow-mo from a
+                # 23.976fps source; skip it for milder ramps (slower + unnecessary).
+                vf += ",minterpolate=fps=48:mi_mode=mci:mc_mode=aobmc"
+            cmd = [
+                "ffmpeg", "-y", "-loglevel", "error",
+                "-hwaccel", "videotoolbox",
+                "-ss", f"{in_s:.3f}", "-i", str(src), "-t", f"{orig_dur:.3f}",
+                "-vf", vf, "-an",
+                "-c:v", "prores_ks", "-profile:v", "3", "-pix_fmt", "yuv422p10le",
+                str(out_path),
+            ]
+            print(f"   🐢 Pre-rendering speed x{speed:g} for {src.name} [{in_s:.2f}-{out_s:.2f}s] ...")
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+            except subprocess.TimeoutExpired:
+                print(f"   ⚠️  Speed pre-render timed out for {src.name} — keeping original speed")
+                continue
+            if result.returncode != 0 or not out_path.exists():
+                print(f"   ⚠️  Speed pre-render failed, keeping original speed: {(result.stderr or '')[-300:]}")
+                continue
+
+        cut["clip"] = str(out_path)
+        cut["source_in"] = 0.0
+        cut["source_out"] = round(new_dur, 3)
+
+
+def duck_audio_segment(src: Path, in_s: float, out_s: float, cache_dir: Path, duck_db: float) -> Path | None:
+    """Extract + attenuate ONLY the [in_s, out_s) audio for one cut — never the
+    whole source file.
+
+    Resolve's scripting API has no clip/track Volume or Gain property exposed
+    to scripting (confirmed against the official README: MediaPoolItem has
+    SetClipProperty for a fixed set of non-audio clip attributes like 'Super
+    Scale', and Timeline has SetTrackEnable which only mutes/unmutes a WHOLE
+    track — nothing sets a level). So ducking is done with ffmpeg.
+
+    Earlier version of this ducked the ENTIRE source file once (video
+    stream-copied) and reused it across cuts — cheap in time, but on a ~16GB
+    4K source that's a ~16GB copy per unique clip, which blew through this
+    Mac's free disk space mid-build (multiple ~16GB clips do not fit in ~14GB
+    free). A cut only ever uses a couple of seconds, so extracting just that
+    audio window (-vn, no video at all) is both disk-safe and simpler: output
+    is a few hundred KB regardless of source file size.
+    """
+    import subprocess
+
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    dur = out_s - in_s
+    if dur <= 0:
+        return None
+    tag = f"duck{duck_db:g}".replace(".", "p").replace("-", "m")
+    out_path = cache_dir / f"{src.stem}_{in_s:.2f}_{out_s:.2f}_{tag}.m4a"
+    if out_path.exists() and out_path.stat().st_size > 0:
+        return out_path
+    cmd = [
+        "ffmpeg", "-y", "-loglevel", "error",
+        "-ss", f"{in_s:.3f}", "-i", str(src), "-t", f"{dur:.3f}",
+        "-vn", "-af", f"volume={duck_db}dB",
+        "-c:a", "aac", "-b:a", "192k",
+        str(out_path),
+    ]
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+    except subprocess.TimeoutExpired:
+        print(f"   ⚠️  Duck extraction timed out for {src.name} [{in_s:.2f}-{out_s:.2f}s]")
+        return None
+    if result.returncode != 0 or not out_path.exists():
+        print(f"   ⚠️  Duck extraction failed for {src.name} [{in_s:.2f}-{out_s:.2f}s]: {(result.stderr or '')[-200:]}")
+        return None
+    return out_path
+
+
+def place_music(project, music_cfg: dict, total_duration_s: float, fps: float, tmp_root: Path) -> None:
+    """Import the music bed and place it on its own audio track, trimmed to the
+    reel's total duration and starting at the timeline's first frame.
+
+    Uses a fresh audio track (AddTrack) rather than reusing A1 (which carries
+    the onboard ride audio linked to the V1 cuts) so the two stay on
+    independent faders — matches the README's documented AppendToTimeline
+    clipInfo dict (mediaType=2 for audio-only placement, README line ~221).
+    """
+    music_path = Path(music_cfg["path"]).expanduser()
+    if not music_path.exists():
+        print(f"   ⚠️  Music file not found: {music_path} — skipping music track")
+        return
+
+    mp = project.GetMediaPool()
+    timeline = project.GetCurrentTimeline()
+
+    track_index = music_cfg.get("audio_track_index") or (timeline.GetTrackCount("audio") + 1)
+    while timeline.GetTrackCount("audio") < track_index:
+        if not timeline.AddTrack("audio", "stereo"):
+            print("   ⚠️  Failed to add audio track for music — skipping music")
+            return
+
+    items = _import_via_tmp(mp, music_path, tmp_root)
+    if not items:
+        print(f"   ⚠️  Failed to import music: {music_path}")
+        return
+
+    offset = float(music_cfg.get("offset", 0.0))
+    timeline_start = timeline.GetStartFrame()
+    try:
+        append_audio_with_in_out(
+            project, items[0],
+            media_in_seconds=offset,
+            media_out_seconds=offset + total_duration_s,
+            track_index=track_index,
+            fps=fps,
+            timeline_start_frame=timeline_start,
+        )
+    except ResolveError as e:
+        print(f"   ⚠️  Could not place music: {e}")
+        return
+
+    print(f"   🎵 Music '{music_path.name}' placed on A{track_index} "
+          f"({offset:.1f}s-{offset + total_duration_s:.1f}s)")
 
 
 def _png_to_animated_mov(
@@ -515,6 +674,18 @@ def main():
     project_folder = brand_config.get("resolve_project_folder")
     project_name = args.project_name or plan["name"]
 
+    # Montage pre-render pass (mutates plan["v1_main"] in place, before we
+    # resolve/import anything) — see prerender_speed_clips docstring for why
+    # this can't just be a scripting API call. Audio ducking happens later,
+    # per-cut, inside the V1 loop (see duck_audio_segment) — it needs each
+    # cut's actual placed timeline position, and must NOT touch whole source
+    # files (some of these clips are 16GB+; ducking used to stream-copy the
+    # whole file per unique clip, which can exceed free disk space).
+    prerender_cache = args.plan.parent / "prerender_cache"
+    if any(float(c.get("speed", 1.0)) != 1.0 for c in plan["v1_main"]):
+        prerender_speed_clips(plan, clips_dir, prerender_cache / "speed")
+    music_cfg = plan.get("music")
+
     # Resolve all clip paths up front (fail fast if missing)
     referenced_clips: list[str] = sorted({entry["clip"] for entry in plan["v1_main"]})
     clip_paths: list[Path] = []
@@ -534,7 +705,7 @@ def main():
     print(f"   Resolve {resolve.GetVersionString()} OK")
 
     project = get_or_create_project(resolve, project_name, folder=project_folder)
-    fps = int(plan.get("fps", 30))
+    fps = int(round(float(plan.get("fps", 30))))
     width, height = plan.get("resolution", [1080, 1920])
     configure_project(project, fps=fps, width=width, height=height)
     print(f"   Project '{project_name}' ready ({width}x{height} @ {fps}fps)")
@@ -568,29 +739,67 @@ def main():
     # Append V1 cuts
     for i, entry in enumerate(plan["v1_main"], start=1):
         clip_name = entry["clip"]
-        item = items_by_name.get(clip_name) or items_by_name.get(Path(clip_name).stem)
+        # clip_name may be an absolute path (montage pre-render output) rather
+        # than a plain filename — look up by basename first, since that's what
+        # items_by_name / GetName() key on.
+        item = (
+            items_by_name.get(Path(clip_name).name)
+            or items_by_name.get(clip_name)
+            or items_by_name.get(Path(clip_name).stem)
+        )
         if item is None:
             sys.exit(f"❌ Could not find imported clip for '{clip_name}'. Available: {list(items_by_name)}")
 
+        # A cut still at speed==1.0 references the plain original source and
+        # still carries its full-volume onboard audio; if a music bed is
+        # configured, place that cut VIDEO-ONLY and duck+place its audio
+        # separately below (a cut already re-pointed to a pre-rendered speed
+        # file has no audio at all — nothing to duck).
+        needs_duck = bool(music_cfg) and float(entry.get("speed", 1.0)) == 1.0
         try:
             tl_item = append_clip_with_in_out(
                 project, item,
                 media_in_seconds=entry["source_in"],
                 media_out_seconds=entry["source_out"],
                 track_index=1,
+                media_type=1 if needs_duck else None,
             )
         except ResolveError as e:
             sys.exit(f"❌ Failed cut #{i} ({clip_name} {entry['source_in']:.2f}-{entry['source_out']:.2f}): {e}")
+
+        if needs_duck:
+            duck_db = float(music_cfg.get("onboard_audio_duck_db", -20.0))
+            src = clips_dir / clip_name
+            ducked = duck_audio_segment(src, entry["source_in"], entry["source_out"],
+                                         prerender_cache / "duck", duck_db)
+            if ducked:
+                a_items = _import_via_tmp(project.GetMediaPool(), ducked, Path("/tmp") / "video_editor_davinci_imports")
+                if a_items:
+                    video_start_frame = int(tl_item.GetStart())
+                    video_dur_frames = int(tl_item.GetDuration())
+                    try:
+                        append_audio_with_in_out(
+                            project, a_items[0],
+                            media_in_seconds=0.0,
+                            media_out_seconds=video_dur_frames / fps,
+                            track_index=1,
+                            fps=fps,
+                            timeline_start_frame=video_start_frame,
+                        )
+                    except ResolveError as e:
+                        print(f"   ⚠️  Could not place ducked audio for cut #{i}: {e}")
 
         # Reframe horizontal source → vertical timeline (fill mode crops sides)
         scaling_ok = set_clip_scaling(tl_item, SCALE_FILL)
         # Apply color CDL if configured
         cdl_ok = apply_cdl(tl_item, **cdl_kwargs) if apply_color else True
 
-        # Cinematic zoom/pan variation per cut — gives static-but-varied framing
-        # so consecutive cuts feel different even when subject barely moves.
-        zoom = _V1_ZOOMS[(i - 1) % len(_V1_ZOOMS)]
-        pan_x = _V1_PAN_X[(i - 1) % len(_V1_PAN_X)]
+        # Framing: montage plans can specify explicit per-cut framing (the crop
+        # offset within the 4:3→9:16 fill); fall back to the cyclic zoom/pan
+        # rotation for plans that don't (speech-driven Reel pipeline default).
+        framing = entry.get("framing") or {}
+        zoom = float(framing.get("zoom", _V1_ZOOMS[(i - 1) % len(_V1_ZOOMS)]))
+        pan_x = float(framing.get("pan_x", _V1_PAN_X[(i - 1) % len(_V1_PAN_X)]))
         zoom_ok = bool(tl_item.SetProperty("ZoomX", zoom)) and bool(tl_item.SetProperty("ZoomY", zoom))
         pan_ok = bool(tl_item.SetProperty("Pan", float(pan_x))) if pan_x else True
 
@@ -598,10 +807,29 @@ def main():
         if scaling_ok: flags.append("fill")
         if apply_color and cdl_ok: flags.append(f"cdl(sat={cdl_kwargs['saturation']:.2f})")
         if zoom_ok: flags.append(f"zoom={zoom:.2f}")
-        if pan_x and pan_ok: flags.append(f"pan={pan_x:+d}")
+        if pan_x and pan_ok: flags.append(f"pan={pan_x:+.0f}")
         flag_str = f" [{', '.join(flags)}]" if flags else ""
         print(f"   ▶ V1 cut {i}/{len(plan['v1_main'])}: {clip_name} "
               f"[{entry['source_in']:.2f}-{entry['source_out']:.2f}s]{flag_str}")
+
+    # Music bed on its own audio track (montage plans only — see plan["music"])
+    if music_cfg:
+        total_duration_s = sum(e["source_out"] - e["source_in"] for e in plan["v1_main"])
+        tmp_root = Path("/tmp") / "video_editor_davinci_imports"
+        place_music(project, music_cfg, total_duration_s, fps, tmp_root)
+
+    # Beat markers on the timeline ruler (montage plans only) — makes it a
+    # 2-click job to nudge cuts or add more speed ramps by hand in Resolve.
+    beats = plan.get("beats") or []
+    if beats:
+        timeline = project.GetCurrentTimeline()
+        timeline_start = timeline.GetStartFrame()
+        placed_markers = 0
+        for b in beats:
+            frame_id = timeline_start + int(round(float(b) * fps))
+            if timeline.AddMarker(frame_id, "Blue", "beat", "", 1):
+                placed_markers += 1
+        print(f"   📍 {placed_markers}/{len(beats)} beat marker(s) added to timeline ruler")
 
     # Kinetic captions on V2 (one styled PNG per caption — Submagic/viral style)
     subs = plan.get("subtitle_track") or []

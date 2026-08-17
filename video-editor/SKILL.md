@@ -202,7 +202,7 @@ Full catalog: [remotion-feature-catalog.md](./references/remotion-feature-catalo
 
 ## SFX library quick map
 
-26 categories at `/Users/gabriel/Documents/EFEITOS SONOROS/`, indexed in `assets/sfx_index.json`. **Use legacy UPPERCASE names in `edit_plan.json`**: `WOOSH`, `CLICK`, `DIGITAL`, `TRANSIÇÃO`, `CAMERA`, `PLIM`, `RISER`, `VARIAVEIS`, `AMBIENTE`, `CINEMATICA`, `ROLAGEM`, `GLITCH`, `TECLADO`, `DINHEIRO`, `ESTALO`, `CONTAGEM`, `POPS`, `BOOM`, `NOTIFICATION`, `DRUM`, `GLASS_BREAK`, `APPLAUSE`, `HORROR`, `FAIL`, `MAGIC`, `HEARTBEAT`.
+26 categories at `$SFX_ROOT/`, indexed in `assets/sfx_index.json`. **Use legacy UPPERCASE names in `edit_plan.json`**: `WOOSH`, `CLICK`, `DIGITAL`, `TRANSIÇÃO`, `CAMERA`, `PLIM`, `RISER`, `VARIAVEIS`, `AMBIENTE`, `CINEMATICA`, `ROLAGEM`, `GLITCH`, `TECLADO`, `DINHEIRO`, `ESTALO`, `CONTAGEM`, `POPS`, `BOOM`, `NOTIFICATION`, `DRUM`, `GLASS_BREAK`, `APPLAUSE`, `HORROR`, `FAIL`, `MAGIC`, `HEARTBEAT`.
 
 Typical volume: -6 to -12 dB (SFX) vs 0 dB (voice). Full usage rules in [sfx-catalog.md](./references/sfx-catalog.md).
 

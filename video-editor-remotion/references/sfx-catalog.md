@@ -1,6 +1,6 @@
 # Catálogo SFX — Guia de Uso
 
-Biblioteca em `/Users/gabriel/Documents/EFEITOS SONOROS/` — 262 arquivos, 17 categorias.
+Biblioteca em `$SFX_ROOT/` — 262 arquivos, 17 categorias.
 Índice em `assets/sfx_index.json`.
 
 ## Como o pipeline usa os SFX

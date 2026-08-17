@@ -118,7 +118,7 @@ const CaptionInner: React.FC<{
           flexWrap: "wrap",
           justifyContent: "center",
           alignItems: "baseline",
-          gap: "0.55em",
+          gap: "0.7em",
           maxWidth: "82%",
           textAlign: "center",
         }}
@@ -147,12 +147,12 @@ const CaptionInner: React.FC<{
             [0, 1],
             { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: easingFn }
           );
-          // Different target scale per class — keyword pops harder
-          const targetScale = cls === "keyword" ? 1.22 : cls === "emphasis" ? 1.14 : 1.06;
+          // Different target scale per class — gentle pop (highlight should not jump out / "ficar distante")
+          const targetScale = cls === "keyword" ? 1.10 : cls === "emphasis" ? 1.07 : 1.03;
           const activeScale = isActive ? 1.0 + (targetScale - 1.0) * wordProgress : 1.0;
 
-          // Smaller font sizes — addresses "fica muito grande"
-          const fontSize = cls === "keyword" ? 84 : cls === "emphasis" ? 76 : 68;
+          // Smaller font sizes + minimal size disparity between highlight and normal — addresses "destaque muito grande"
+          const fontSize = cls === "keyword" ? 60 : cls === "emphasis" ? 58 : 54;
           const fontWeight = 900;
 
           // Active styling
@@ -177,11 +177,11 @@ const CaptionInner: React.FC<{
                 fontSize,
                 color: textColor,
                 background: bgColor,
-                padding: useBox ? "0.04em 0.20em" : 0,
-                borderRadius: 14,
-                lineHeight: 1.1,
-                letterSpacing: "0.005em",
-                WebkitTextStroke: useBox ? "0" : `9px ${brandColors.stroke}`,
+                padding: useBox ? "0.05em 0.15em" : 0,
+                borderRadius: 10,
+                lineHeight: 1.3,
+                letterSpacing: "0.05em",
+                WebkitTextStroke: useBox ? "0" : `5px ${brandColors.stroke}`,
                 paintOrder: "stroke fill",
                 textShadow: useBox
                   ? "0 4px 12px rgba(0,0,0,0.4)"

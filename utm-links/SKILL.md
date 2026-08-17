@@ -43,16 +43,26 @@ com mês/ano — `onco_laser_ago26`. Sanitize **todo** valor: minúsculas, sem
 acento, espaço vira `_`, só `[a-z0-9_-]`.
 
 Gere um link por canal da matriz. Inclua os canais que o usuário pediu **e**
-os essenciais que faltarem — bio, stories, e-mail e os dois de tráfego pago
-raramente não se aplicam. Se o lançamento tem ativos com URL própria (pesquisa
-Typebot, e-book, grupo de WhatsApp), gere link para eles também: eles também
-são pontos de entrada.
+os essenciais que faltarem — bio, stories, e-mail, SMS e os dois de tráfego
+pago raramente não se aplicam. Se o lançamento tem ativos com URL própria
+(pesquisa Typebot, **pesquisa pós-evento / certificado**, e-book, grupo de
+WhatsApp), gere link para eles também: eles também são pontos de entrada.
 
-**Dois canais que quase sempre são esquecidos e entram por padrão:** a **área de
+A **pesquisa pós-evento** é a mais esquecida das duas pesquisas, porque só entra
+em cena depois que o lançamento "acabou" — mas é ela que entrega o certificado e
+abre a fase de downsell. Em agosto/26 o e-mail de liberação do certificado dos
+dois lançamentos ficou parado esperando esse link.
+
+**Três canais que quase sempre são esquecidos e entram por padrão:** a **área de
 membros** (o link da LP colocado dentro da plataforma, para a base que já
-comprou — audiência quente e gratuita) e a **página do Facebook**. Sem UTM
-própria, os dois caem como tráfego direto no relatório e somem. Ver
+comprou — audiência quente e gratuita), a **página do Facebook** e o **SMS**.
+Sem UTM própria, os três caem como tráfego direto no relatório e somem. Ver
 `channel-defaults.md`.
+
+O **SMS entra nas duas fases** — `<evento>-sms` na captação e
+`<evento>-oferta-sms` na fase de vendas. Quem dispara costuma ser outra pessoa
+(GrowAI ou operadora), então o link precisa estar pronto na Central antes de
+alguém pedir.
 
 ⚠️ **Meta Ads e Google Ads não levam valores fixos** — levam as macros da
 plataforma (`{{campaign.name}}`, `{keyword}`…), coladas no campo de parâmetros
@@ -77,10 +87,12 @@ e no relatório de cliques do Shlink).
 |---|---|---|
 | Link principal (bio, o mais visível) | `<evento>` | `onco-laser` |
 | Demais canais | `<evento>-<código>` | `onco-laser-e` |
-| Ativo com nome próprio | `<evento>-<ativo>` | `onco-laser-ebook`, `onco-laser-suporte`, `onco-laser-grupo`, `onco-laser-pesquisa` |
+| Ativo com nome próprio | `<evento>-<ativo>` | `onco-laser-ebook`, `onco-laser-suporte`, `onco-laser-grupo`, `onco-laser-pesquisa`, `onco-laser-pesquisa-pos` |
 
 Ativos com nome próprio ficam por extenso de propósito: "suporte", "ebook" e
 "grupo" descrevem o que a pessoa vai receber — isso **aumenta** a confiança.
+O `-pos` de `<evento>-pesquisa-pos` também passa: ele diz *quando* (depois do
+evento), não a segmentação de quem recebeu.
 O que não pode aparecer é a mecânica de segmentação (`-email-base-total`,
 `-retargeting`, `-lista-fria`).
 
@@ -94,6 +106,11 @@ Códigos de canal (use estes; são estáveis entre campanhas):
 | `r` | reels / feed | `gg` | Google Ads |
 | `d` | DM | `tk` | TikTok Ads |
 | `y` | YouTube | `e` / `eq` | e-mail base / quentes |
+| `t` | Telegram | `sms` | SMS (disparo de lista) |
+
+`sms` é o único código por extenso da tabela, de propósito: `s` já é stories, e
+um código de uma letra a mais tornaria a legenda ilegível. Ele não denuncia
+segmentação — quem recebe já sabe que está lendo um SMS.
 
 O caminho normal é rodar o script, que faz URLs + short links de uma vez:
 
@@ -180,6 +197,41 @@ do workspace Exos.
 Se a campanha for longa e merecer rota própria (`/suporte-<evento>`), diga isso
 ao usuário — mas o `?m=` resolve sem deploy e é o caminho padrão.
 
+## Passo 3b — Link do time de vendas (comercial) do evento
+
+Todo funil com fase de vendas ganha um **segundo** link de WhatsApp, irmão do
+suporte: o do **comercial**, que fecha matrícula. Papéis distintos, números
+distintos — suporte tira dúvida, comercial vende — e os disparos da fase de
+vendas distribuem os dois com esses papéis.
+
+Cada site tem a rota **`/comercial`**, com o mesmo contrato da `/suporte`
+(mensagem por campanha via `?m=`, número num lugar só):
+
+```
+https://<dominio>/comercial/?m=<mensagem do evento, URL-encoded>
+```
+
+| Cliente | Rota | Número por trás (02/08/2026) |
+|---|---|---|
+| Elen Tolentino | `elentolentino.com.br/comercial` | +55 11 95821-6675 ("Ana — Pós Graduação", dedicado) |
+| Letícia Lang | `leticialang.com.br/comercial` | +55 11 5296-0315 ("Dra. Letícia — Pós Anhanguera", dedicado) |
+| Dr. Kleber | `klebermeireles.com/comercial` | número de suporte (sem chip dedicado; mensagem em inglês) |
+| Daniela Moleiro | `danielamoleiro.com.br/comercial` | número de suporte (sem chip dedicado) |
+
+A mensagem é na voz do lead, **de compra** (não de dúvida), identificando o
+evento, sem ponto final:
+
+> `Olá! Vim do <evento> e quero fazer minha matrícula na <produto>`
+
+Encurte como **`<evento>-atendimento`** ("atendimento" descreve o que a pessoa
+recebe sem denunciar "vendas"), com tags `<tag do lançamento>` + `canal-comercial`
+— é o que separa, no painel, clique de venda de clique de suporte. Registre na
+Central como "WhatsApp do time de vendas".
+
+Quando o cliente ganhar um chip dedicado de comercial (hoje só Elen e Letícia
+têm), troca-se o número **na rota** — os links distribuídos continuam valendo.
+Números: `<Cliente>/NUMEROS_OFICIAIS.md` (Elen: `.sendflow/numeros-confianca.md`).
+
 ## Passo 4 — Gravar na Central de Links
 
 Ache o doc pela tag do lançamento (a lista é longa, precisa paginar):
@@ -215,22 +267,40 @@ auditar abre o link ou o painel do Shlink. As duas exceções são Meta e Google
 Ads, que **precisam** da URL crua porque as macros vão coladas na plataforma —
 essas ficam numa segunda seção, com o nome dizendo o que fazer com elas.
 
+⚠️ **TODA URL vai como `[url](url)`, nunca solta.** URL crua num PUT do ClickUp
+entra como **texto puro**: sai preta no editor, não é clicável, e o time
+precisa selecionar e copiar à mão. E o erro é invisível pela API — o export
+`content_format=text/md` renderiza qualquer URL como `[url](url)`, então o GET
+de conferência devolve Markdown com cara de link mesmo quando o doc está com
+texto morto. **Não existe conferência automática disso: só a sintaxe explícita
+no PUT garante o anchor.** Vale também para as URLs de anúncio.
+
+O texto visível continua sendo a própria URL — o formato é `rótulo: link`, e o
+que muda é existir destino.
+
 ```
 **Links UTM & Encurtados [padrão Exos]**
 
-*   Bio Instagram: https://exosgo.link/onco-laser
-*   E-mail — base total: https://exosgo.link/onco-laser-e
-*   WhatsApp — grupos do evento: https://exosgo.link/onco-laser-g
-*   Suporte do evento: https://exosgo.link/onco-laser-suporte
+*   Bio Instagram: [https://exosgo.link/onco-laser](https://exosgo.link/onco-laser)
+*   E-mail — base total: [https://exosgo.link/onco-laser-e](https://exosgo.link/onco-laser-e)
+*   WhatsApp — grupos do evento: [https://exosgo.link/onco-laser-g](https://exosgo.link/onco-laser-g)
+*   Suporte do evento: [https://exosgo.link/onco-laser-suporte](https://exosgo.link/onco-laser-suporte)
 
 **Parâmetros de URL para colar na plataforma de anúncio**
 
-*   Meta Ads: https://.../?utm_source=meta_ads&utm_medium={{adset.name}}&...
-*   Google Ads: https://.../?utm_source=google_ads&utm_medium={adgroupid}&...
+*   Meta Ads: [https://.../?utm_source=meta_ads&utm_medium={{adset.name}}&...](https://.../?utm_source=meta_ads&utm_medium={{adset.name}}&...)
+*   Google Ads: [https://.../?utm_source=google_ads&utm_medium={adgroupid}&...](https://.../?utm_source=google_ads&utm_medium={adgroupid}&...)
 ```
 
 `scripts/build_links.py` já emite exatamente esse formato: itens com
-`raw_query` (os de anúncio) caem na segunda seção, o resto vira short link.
+`raw_query` (os de anúncio) caem na segunda seção, o resto vira short link, e
+tudo passa por `md_link()`.
+
+⚠️ **Ao reescrever o doc inteiro (PUT `replace`), as linhas que você não criou
+também perdem o link** se você as copiar do export como URL solta. Os campos que
+o time preencheu à mão — Planejamento Estratégico, Página de Captação, Grupo de
+WhatsApp — chegam do GET já no formato `[url](url)`: **mantenha esse formato
+verbatim**, não "limpe" para URL crua.
 
 Regras de segurança:
 
@@ -267,3 +337,4 @@ para Meta e Google. Diga explicitamente:
 | `utm_campaign` diferente entre canais | derive uma vez e reuse; divergência fragmenta o relatório |
 | Acento quebrado na mensagem do suporte | montou a query na mão; use `urllib.parse.quote`/`URLSearchParams` |
 | Central sobrescrita | fez PUT sem ler o conteúdo antes |
+| Link da Central não é clicável (texto preto) | mandou URL solta no PUT; tem que ser `[url](url)`. O GET em `text/md` **não** acusa — ele mostra `[url](url)` de qualquer jeito. Corrija reescrevendo as linhas com sintaxe explícita |

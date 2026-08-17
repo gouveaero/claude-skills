@@ -6,7 +6,7 @@ info: |
 class: text-center
 transition: slide-left | slide-right
 clickAnimation: up
-comark: true
+mdc: true
 highlighter: shiki
 drawings:
   persist: false

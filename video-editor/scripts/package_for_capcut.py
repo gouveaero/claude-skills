@@ -23,13 +23,13 @@ Uso:
         --brutos-dir  <input>/                    # pasta com os brutos originais
         --proxy       <output>/proxy.mp4 \\
         --sfx-index   ~/.claude/skills/video-editor/assets/sfx_index.json \\
-        --sfx-root    /Users/gabriel/Documents/EFEITOS\\ SONOROS \\
+        --sfx-root    "$SFX_ROOT" \\
         --reel-name   TriboTax_R1_Pecunia \\
         --pkg-root    <input>/                    # onde criar o capcut_package/
         --out-plan    /tmp/edit_plan_packaged.json
         --out-sfx     /tmp/sfx_index_packaged.json
 """
-import argparse, json, random, re, shutil, subprocess, sys
+import argparse, json, os, random, re, shutil, subprocess, sys
 from collections import defaultdict
 from pathlib import Path
 
@@ -139,7 +139,7 @@ def main():
     ap.add_argument("--brutos-dir", required=True, type=Path, help="Pasta com os brutos originais")
     ap.add_argument("--proxy",      required=False, type=Path, help="proxy.mp4 do Remotion")
     ap.add_argument("--sfx-index",  required=True, type=Path, help="sfx_index.json")
-    ap.add_argument("--sfx-root",   default=Path("/Users/gabriel/Documents/EFEITOS SONOROS"), type=Path)
+    ap.add_argument("--sfx-root",   default=Path(os.environ.get("SFX_ROOT", "$SFX_ROOT")), type=Path)
     ap.add_argument("--reel-name",  required=True, help="Usado como seed da seleção de SFX (e nome do draft)")
     ap.add_argument("--pkg-root",   required=True, type=Path, help="Onde criar capcut_package/")
     ap.add_argument("--out-plan",   default=Path("/tmp/edit_plan_packaged.json"), type=Path)

@@ -16,3 +16,31 @@ Icon\r
 .idea/
 *.swp
 *.swo
+
+# ---------------------------------------------------------------
+# Credenciais e sessao — NUNCA commitar
+# ---------------------------------------------------------------
+credentials*.json
+*.local.json
+*.local.md
+.env
+.env.*
+!.env.example
+.auth/
+auth.json
+
+# Perfis de navegador e estado de sessao (Playwright, Freepik, Magnific)
+.playwright-profile/
+.session_state.json
+*_state.json
+state.json
+
+# ---------------------------------------------------------------
+# Dependencias e artefatos de build — reproduziveis
+# ---------------------------------------------------------------
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.cache/
